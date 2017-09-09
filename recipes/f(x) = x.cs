@@ -6,7 +6,9 @@ namespace Recipes
     {
         static void Print(string header, Dots.Dot[] vec)
         {
-            Console.WriteLine(header);
+            Console.ForegroundColor = ConsoleColor.White;
+
+            Console.WriteLine($"{header}:\r\n");
 
             for (var i = 0; i < vec.Length; i++)
             {
@@ -14,15 +16,17 @@ namespace Recipes
             }
 
             Console.WriteLine();
+
+            Console.ResetColor();
         }
 
         static void Inspect(string header, Dots.Dot[] vec)
         {
-            Console.WriteLine(header);
+            Console.WriteLine($"{header}:\r\n");
 
             for (var i = 0; i < vec.Length; i++)
             {
-                Console.WriteLine($"{vec[i].ToString()}");
+                Console.WriteLine($"{vec[i].inspect()}");
             }
 
             Console.WriteLine();
@@ -43,73 +47,72 @@ namespace Recipes
             return vec;
         }
 
-        static void Run(string[] args)
+        static void Test(int inputs, Dots.Dot[][] H, Dots.Dot[] Y)
         {
-            const int INPUTS = 4; const int OUTPUTS = 4;
+            Console.WriteLine("\r\n**************************\r\n");
 
-            var Y = new Dots.Dot[OUTPUTS]
-            {
-                Dots.create(),
-                Dots.create(),
-                Dots.create(),
-                Dots.create()
-            };
+            Dots.Dot[] X;
 
-            Dots.path(Vector(INPUTS), null, Y);
-
-            double Error = 0.0;
-
-            for (int episode = 0; episode < 128 * 1024; episode++)
-            {
-                Error = 0.0;
-
-                Dots.Dot[] T = Vector(INPUTS);
-
-                Dots.compute(T, null, Y);
-
-                double E;
-
-                double LearningRate = 0.001;
-
-                Dots.learn(null, Y, LearningRate, out E, T);
-
-                Error += E;
-
-                if (double.IsNaN(E) || double.IsInfinity(E))
-                {
-                    break;
-                }
-
-                E = 0.5 * (Error * Error);
-
-                if (double.IsNaN(E) || double.IsInfinity(E))
-                {
-                    break;
-                }
-
-                if (E <= double.Epsilon)
-                {
-                    break;
-                }
-
-                Console.WriteLine($"{E}");
-
-            }
-
-            Console.WriteLine();
-
-            var X = Vector(INPUTS);
+            X = Vector(inputs);
 
             Print("X", X);
 
-            Dots.compute(X, null, Y);
-
-            Inspect("B", Y);
+            Dots.compute(X, H, Y);
 
             Print("Y", Y);
 
+            Console.WriteLine("\r\n=========================\r\n");
+
+            for (int l = 0; l < H.Length; l++)
+            {
+                Inspect($"H{l}", H[l]);
+            }
+
+            Inspect("O", Y);
+
+            Console.WriteLine("\r\nE:\r\n");
+
+            Console.WriteLine($"{Dots.error(Y, X)}");
+
         }
 
+        static void Run(bool verbose)
+        {
+            const int INPUTS = 3; const int HIDDEN = INPUTS; const int OUTPUTS = INPUTS;
+
+            var H = new Dots.Dot[][]
+            {
+               // Dots.create(HIDDEN)
+            };
+
+            var Y = Dots.create(OUTPUTS);
+
+            Dots.path(INPUTS, H, Y);
+
+            Test(INPUTS, H, Y);
+
+            for (int episode = 0; episode < 21 * 128 * 1024; episode++)
+            {
+                var X = Vector(INPUTS);
+
+                Dots.compute(X, H, Y);
+
+                double E = Dots.learn(Y, 0.001, X);
+
+                if (E <= double.Epsilon || double.IsNaN(E) || double.IsInfinity(E))
+                {
+                    break;
+                }
+
+                if (verbose)
+                {
+                    Console.WriteLine($"{E}");
+                }
+            }
+
+            Test(INPUTS, H, Y);
+        }
+    
         static void Main(string[] args)
         {
             Console.CancelKeyPress += (sender, e) =>
@@ -117,7 +120,7 @@ namespace Recipes
                 e.Cancel = true;
             };
 
-            Run(args);
+            Run(false);
 
             Console.ReadKey();
         }

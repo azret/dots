@@ -109,7 +109,7 @@ public static class Dots
 
         public void randomize()
         {
-            for (int j = 0; j < _β.Length; j++)
+            for (int j = 0; _β != null && j < _β.Length; j++)
             {
                 _β[j].b = random();
             }
@@ -141,27 +141,6 @@ public static class Dots
         public Dot(IFunction F = null)
         {
             _F = F;
-        }
-        
-        public override string ToString()
-        {
-            StringBuilder s = new StringBuilder();
-
-            s.Append("[");
-
-            s.Append($"Bo:{_βo}");
-
-            var j = 0;
-
-            while (_β != null && j < _β.Length)
-            {
-                s.Append($", {_β[j].b}");
-                j++;
-            }
-
-            s.Append("]");
-
-            return s.ToString();
         }
 
         double _δ;
@@ -222,6 +201,30 @@ public static class Dots
             if (_β == null || _β.Length < X.Length)
             {
                 var tmp = new β[X.Length];
+
+                j = 0;
+
+                for (; _β != null && j < _β.Length; j++)
+                {
+                    tmp[j] = _β[j];
+                }
+
+                for (; j < tmp.Length; j++)
+                {
+                    tmp[j].b = random();
+                }
+
+                _β = tmp;
+            }
+        }
+
+        public void path(int X)
+        {
+            int j;
+
+            if (_β == null || _β.Length < X)
+            {
+                var tmp = new β[X];
 
                 j = 0;
 
@@ -314,16 +317,51 @@ public static class Dots
 
     }
 
+    public static string inspect(this Dot dot)
+    {
+        StringBuilder s = new StringBuilder();
+
+        s.Append("[");
+
+        s.Append($"B0:{dot.βo}");
+
+        var j = 0;
+
+        while (dot.Β != null && j < dot.Β.Length)
+        {
+            s.Append($", B{j + 1}:{dot.Β[j].b}");
+            j++;
+        }
+
+        s.Append("]");
+
+        return s.ToString();
+    }
+
     public static Dot create()
     {
         return new Dot(null);
     }
 
-    public static Dot create(double Γ, params double[] θ)
+    public static Dot[] create(int size, IFunction F = null)
+    {
+        var L = new Dots.Dot[size];
+
+        for (int i = 0; i < L.Length; i++)
+        {
+            L[i] = new Dot(F);            
+        }
+
+        L.randomize();
+
+        return L;
+    }
+
+    public static Dot create(double Bo, params double[] B)
     {
         var o = new Dot();
 
-        o.path(Γ, θ);
+        o.path(Bo, B);
 
         return o;
     }
@@ -338,7 +376,7 @@ public static class Dots
         return new Dot(new Tanh());
     }
 
-    public static void randomize<T>(IList<T> A)
+    public static void randomize<T>(this IList<T> A)
     {
         int c = A.Count;
 
@@ -352,7 +390,7 @@ public static class Dots
         }
     }
 
-    public static void randomize(Dot[] dots)
+    public static void randomize(this Dot[] dots)
     {
         for (int i = 0; dots != null && i < dots.Length; i++)
         {
@@ -365,6 +403,29 @@ public static class Dots
         for (int i = 0; i < dots.Length; i++)
         {
             randomize(dots[i]);
+        }
+    }
+
+    public static void path(int X, Dot[][] H, Dot[] Y)
+    {
+        if (H != null)
+        {
+            for (int l = 0; H != null && l < H.Length; l++)
+            {
+                Dot[] h = H[l];
+
+                for (int i = 0; i < h.Length; i++)
+                {
+                    h[i].path(X);
+                }
+
+                X = h.Length;
+            }
+        }
+
+        for (int i = 0; Y != null && i < Y.Length; i++)
+        {
+            Y[i].path(X);
         }
     }
 
@@ -412,6 +473,16 @@ public static class Dots
         {
             Y[i].compute(X);
         }
+    }
+
+
+    public static double learn(Dot[] Y, double learningRate, params Dot[] T)
+    {
+        double Δ;
+
+        learn(null, Y, learningRate, out Δ, T);
+
+        return Δ;
     }
 
     public static void learn(Dot[][] H, Dot[] Y, double learningRate, out double Δ, params Dot[] T)
@@ -479,5 +550,26 @@ public static class Dots
                 }
             }
         }
+    }
+
+    public static double error(Dot[] Y, params Dot[] T)
+    {
+        double Δ = 0.0;
+
+        for (int i = 0; i < Y.Length; i++)
+        {
+            var o = Y[i];
+
+            double t = o.y;
+
+            if (i < T.Length)
+            {
+                t = T[i].y;
+            }
+
+            Δ += Math.Pow(o.y - t, 2);
+        }
+
+        return Δ;
     }
 }
