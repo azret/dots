@@ -321,7 +321,7 @@ public static class Dots
     {
         StringBuilder s = new StringBuilder();
 
-        s.Append("[");
+        s.Append("[");        
 
         s.Append($"B0:{dot.βo}");
 

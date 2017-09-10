@@ -20,13 +20,16 @@ namespace Recipes
             Console.ResetColor();
         }
 
-        static void Inspect(string header, Dots.Dot[] vec)
+        static void Inspect(string header, Dots.Dot[] vec, ConsoleColor color)
         {
             Console.WriteLine($"{header}:\r\n");
 
             for (var i = 0; i < vec.Length; i++)
             {
-                Console.WriteLine($"{vec[i].inspect()}");
+                Console.ForegroundColor = color;
+                Console.Write($"{vec[i].y}");
+                Console.ResetColor();
+                Console.WriteLine($" = {vec[i].inspect()}");
             }
 
             Console.WriteLine();
@@ -58,17 +61,15 @@ namespace Recipes
             Print("X", X);
 
             Dots.compute(X, H, Y);
-
-            Print("Y", Y);
-
+            
             Console.WriteLine("\r\n=========================\r\n");
 
             for (int l = 0; l < H.Length; l++)
             {
-                Inspect($"H{l}", H[l]);
+                Inspect($"H{l}", H[l], ConsoleColor.DarkGray);
             }
 
-            Inspect("O", Y);
+            Inspect("O", Y, ConsoleColor.Green);
 
             Console.WriteLine("\r\nE:\r\n");
 
@@ -82,7 +83,7 @@ namespace Recipes
 
             var H = new Dots.Dot[][]
             {
-               // Dots.create(HIDDEN)
+               Dots.create(HIDDEN)
             };
 
             var Y = Dots.create(OUTPUTS);
@@ -91,7 +92,7 @@ namespace Recipes
 
             Test(INPUTS, H, Y);
 
-            for (int episode = 0; episode < 21 * 128 * 1024; episode++)
+            for (int episode = 0; episode < 32 * 128 * 1024; episode++)
             {
                 var X = Vector(INPUTS);
 
