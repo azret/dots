@@ -35,9 +35,9 @@ namespace Recipes
             Console.WriteLine();
         }
 
-        static Dots.Dot[] Vector(int size)
+        static Dots.Dot[] Vector()
         {
-            Dots.Dot[] vec = new Dots.Dot[size];
+            Dots.Dot[] vec = new Dots.Dot[1 + Dots.Dot.random(11)];
 
             for (var i = 0; i < vec.Length; i++)
             {
@@ -50,17 +50,17 @@ namespace Recipes
             return vec;
         }
 
-        static void Test(int inputs, Dots.Dot[][] H, Dots.Dot[] Y)
+        static void Test(Dots.Dot[] Y, Dots.Dot[][] H)
         {
             Console.WriteLine("\r\n**************************\r\n");
 
             Dots.Dot[] X;
 
-            X = Vector(inputs);
+            X = Vector();
 
             Print("X", X);
 
-            Dots.compute(X, H, Y);
+            Dots.compute(Y, H, X);
             
             Console.WriteLine("\r\n=========================\r\n");
 
@@ -69,7 +69,7 @@ namespace Recipes
                 Inspect($"H{l}", H[l], ConsoleColor.DarkGray);
             }
 
-            Inspect("O", Y, ConsoleColor.Green);
+            Inspect("Y", Y, ConsoleColor.Green);
 
             Console.WriteLine("\r\nE:\r\n");
 
@@ -79,26 +79,26 @@ namespace Recipes
 
         static void Run(bool verbose)
         {
-            const int INPUTS = 3; const int HIDDEN = INPUTS; const int OUTPUTS = INPUTS;
+            const int OUTPUTS = 7;
 
             var H = new Dots.Dot[][]
             {
-               Dots.create(HIDDEN)
+               Dots.create(OUTPUTS)
             };
 
             var Y = Dots.create(OUTPUTS);
-
-            Dots.path(INPUTS, H, Y);
-
-            Test(INPUTS, H, Y);
+            
+            Test(Y, H);
 
             for (int episode = 0; episode < 32 * 128 * 1024; episode++)
             {
-                var X = Vector(INPUTS);
+                var X = Vector();
 
-                Dots.compute(X, H, Y);
+                Dots.grow(X, H, Y);
 
-                double E = Dots.learn(H, Y, 0.001, X);
+                Dots.compute(Y, H, X);
+
+                double E = Dots.train(Y, H, X, 0.01);
 
                 if (E <= double.Epsilon || double.IsNaN(E) || double.IsInfinity(E))
                 {
@@ -111,7 +111,7 @@ namespace Recipes
                 }
             }
 
-            Test(INPUTS, H, Y);
+            Test(Y, H);
         }
     
         static void Main(string[] args)

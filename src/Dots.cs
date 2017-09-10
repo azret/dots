@@ -68,7 +68,7 @@ public static class Dots
 
     public class Dot
     {
-        public struct β
+        public struct θ
         {
             public double a;
             public double x;
@@ -87,9 +87,9 @@ public static class Dots
             return randomizer.Next(max);
         }
 
-        β[] _β;
+        θ[] _β;
 
-        public β[] Β
+        public θ[] β
         {
             get
             {
@@ -117,11 +117,11 @@ public static class Dots
             _βo = random();
         }
 
-        public void path(double Bo, params double[] B)
+        public void draw(double Bo, params double[] B)
         {
             _βo = Bo;
 
-            var θn = new β[B.Length];
+            var θn = new θ[B.Length];
 
             for (int j = 0; j < θn.Length; j++)
             {
@@ -192,39 +192,15 @@ public static class Dots
             {
                 return _β.Length;
             }
-        }
+        }         
 
-        public void path(params Dot[] X)
-        {
-            int j;
-
-            if (_β == null || _β.Length < X.Length)
-            {
-                var tmp = new β[X.Length];
-
-                j = 0;
-
-                for (; _β != null && j < _β.Length; j++)
-                {
-                    tmp[j] = _β[j];
-                }
-
-                for (; j < tmp.Length; j++)
-                {
-                    tmp[j].b = random();
-                }
-
-                _β = tmp;
-            }
-        }
-
-        public void path(int X)
+        public void grow(int X)
         {
             int j;
 
             if (_β == null || _β.Length < X)
             {
-                var tmp = new β[X];
+                var tmp = new θ[X];
 
                 j = 0;
 
@@ -327,9 +303,9 @@ public static class Dots
 
         var j = 0;
 
-        while (dot.Β != null && j < dot.Β.Length)
+        while (dot.β != null && j < dot.β.Length)
         {
-            s.Append($", B{j + 1}:{dot.Β[j].b}");
+            s.Append($", B{j + 1}:{dot.β[j].b}");
             j++;
         }
 
@@ -361,7 +337,7 @@ public static class Dots
     {
         var o = new Dot();
 
-        o.path(Bo, B);
+        o.draw(Bo, B);
 
         return o;
     }
@@ -406,7 +382,7 @@ public static class Dots
         }
     }
 
-    public static void path(int X, Dot[][] H, Dot[] Y)
+    public static void grow(int X, Dot[][] H, Dot[] Y)
     {
         if (H != null)
         {
@@ -416,7 +392,7 @@ public static class Dots
 
                 for (int i = 0; i < h.Length; i++)
                 {
-                    h[i].path(X);
+                    h[i].grow(X);
                 }
 
                 X = h.Length;
@@ -425,34 +401,16 @@ public static class Dots
 
         for (int i = 0; Y != null && i < Y.Length; i++)
         {
-            Y[i].path(X);
+            Y[i].grow(X);
         }
     }
 
-    public static void path(Dot[] X, Dot[][] H, Dot[] Y)
+    public static void grow(Dot[] X, Dot[][] H, Dot[] Y)
     {
-        if (H != null)
-        {
-            for (int l = 0; H != null && l < H.Length; l++)
-            {
-                Dot[] h = H[l];
-
-                for (int i = 0; i < h.Length; i++)
-                {
-                    h[i].path(X);
-                }
-
-                X = h;
-            }
-        }
-
-        for (int i = 0; Y != null && i < Y.Length; i++)
-        {
-            Y[i].path(X);
-        }
+        grow(X.Length, H, Y);
     }
 
-    public static void compute(Dot[] X, Dot[][] H, Dot[] Y)
+    public static void compute(Dot[] Y, Dot[][] H, Dot[] X)
     {
         if (H != null)
         {
@@ -476,16 +434,16 @@ public static class Dots
     }
 
 
-    public static double learn(Dot[][] H, Dot[] Y, double learningRate, params Dot[] T)
+    public static double train(Dot[] Y, Dot[][] H, Dot[] T, double learningRate)
     {
         double Δ;
 
-        learn(H, Y, learningRate, out Δ, T);
+        train(Y, H, T, learningRate, out Δ);
 
         return Δ;
     }
 
-    public static void learn(Dot[][] H, Dot[] Y, double learningRate, out double Δ, params Dot[] T)
+    public static void train(Dot[] Y, Dot[][] H, Dot[] T, double learningRate, out double Δ)
     {
         Δ = 0.0;
 
@@ -521,7 +479,7 @@ public static class Dots
 
                     for (int j = 0; j < P.Length; j++)
                     {
-                        δ += P[j].δ * P[j].Β[i].b;
+                        δ += P[j].δ * P[j].β[i].b;
                     }
 
                     Δ += 0.0;
@@ -552,7 +510,7 @@ public static class Dots
         }
     }
 
-    public static double error(Dot[] Y, params Dot[] T)
+    public static double error(Dot[] Y, Dot[] T)
     {
         double Δ = 0.0;
 
