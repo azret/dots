@@ -166,6 +166,14 @@ public static class Dots
 
         IFunction _F;
 
+        public IFunction F
+        {
+            get
+            {
+                return _F;
+            }
+        }
+
         public Dot(IFunction F = null)
         {
             _F = F;
@@ -197,6 +205,11 @@ public static class Dots
             {
                 _y = value;
             }
+        }
+
+        public static implicit operator Dot(double y)
+        {
+            return new Dot() { y = y };
         }
 
         public void off()
@@ -504,14 +517,14 @@ public static class Dots
         {
             var o = Y[i];
 
-            double t = o.y;
+            var t = o;
 
             if (i < T.Length)
             {
-                t = T[i].y;
+                t = T[i];
             }
 
-            var diff = o.y - t;             
+            var diff = o.y - t.y;             
 
             Δ += Math.Pow(diff, 2);
 
@@ -575,14 +588,16 @@ public static class Dots
         {
             var o = Y[i];
 
-            double t = o.y;
+            var t = o;
 
             if (i < T.Length)
             {
-                t = T[i].y;
+                t = T[i];
             }
 
-            Δ += Math.Pow(o.y - t, 2);
+            var diff = o.y - t.y;
+
+            Δ += Math.Pow(diff, 2);
         }
 
         Δ *= 0.5;

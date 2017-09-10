@@ -163,7 +163,7 @@ namespace Recipes
 
                 32,
 
-                12 * 32 * 1024,
+                32 * 32 * 1024,
 
                 (episode, X, error)=>
                 {
@@ -177,7 +177,7 @@ namespace Recipes
 
                     d += D * D * (episode + 1);
 
-                    if (double.IsNaN(d) || double.IsInfinity(d))
+                    if (double.IsNaN(D) || double.IsInfinity(D))
                     {
                         return int.MaxValue - 1;
                     }
