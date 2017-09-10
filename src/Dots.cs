@@ -66,6 +66,34 @@ public static class Dots
         }
     }
 
+    public class Identity : IFunction
+    {
+        public static IFunction New()
+        {
+            return new Identity();
+        }
+
+        public static double y(double value)
+        {
+            return value;
+        }
+
+        public static double dy(double value)
+        {
+            return 1.0;
+        }
+
+        double IFunction.y(double value)
+        {
+            return y(value);
+        }
+
+        double IFunction.dy(double value)
+        {
+            return dy(value);
+        }
+    }
+
     public class Dot
     {
         public struct θ
@@ -483,10 +511,14 @@ public static class Dots
                 t = T[i].y;
             }
 
-            Δ += Math.Pow(o.y - t, 2);
+            var diff = o.y - t;             
 
-            o.δ = -(o.y - t) * o.dy * learningRate;
+            Δ += Math.Pow(diff, 2);
+
+            o.δ = -diff * o.dy * learningRate;
         }
+
+        Δ *= 0.5;
 
         Dot[] L;
 
@@ -552,6 +584,8 @@ public static class Dots
 
             Δ += Math.Pow(o.y - t, 2);
         }
+
+        Δ *= 0.5;
 
         return Δ;
     }
