@@ -476,11 +476,11 @@ public static class Dots
     }
 
 
-    public static double learn(Dot[] Y, double learningRate, params Dot[] T)
+    public static double learn(Dot[][] H, Dot[] Y, double learningRate, params Dot[] T)
     {
         double Δ;
 
-        learn(null, Y, learningRate, out Δ, T);
+        learn(H, Y, learningRate, out Δ, T);
 
         return Δ;
     }

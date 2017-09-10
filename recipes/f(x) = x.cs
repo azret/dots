@@ -98,7 +98,7 @@ namespace Recipes
 
                 Dots.compute(X, H, Y);
 
-                double E = Dots.learn(Y, 0.001, X);
+                double E = Dots.learn(H, Y, 0.001, X);
 
                 if (E <= double.Epsilon || double.IsNaN(E) || double.IsInfinity(E))
                 {
