@@ -127,7 +127,7 @@ namespace Recipes
 
             Dots.Dot[][] H = new Dots.Dot[][]
             {
-               // Dots.create(1024) 
+                Dots.create(32) 
             };
 
             Dots.Dot[] Y = null;
@@ -145,7 +145,7 @@ namespace Recipes
 
             Run(
                 
-                () => 0.001,
+                () => 0.0001,
 
                 ref Y,
 
@@ -169,13 +169,13 @@ namespace Recipes
                 {
                     E += error * error * (episode + 1);
 
-                    S += E * E * 0.5;
+                    S += E * E * (episode + 1);
 
-                    A += S * S * 0.5;
+                    A += S * S * (episode + 1);
 
-                    D += A * A * 0.5;
+                    D += A * A * (episode + 1);
 
-                    d += D * D * 0.5;
+                    d += D * D * (episode + 1);
 
                     if (double.IsNaN(d) || double.IsInfinity(d))
                     {
