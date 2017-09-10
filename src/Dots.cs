@@ -192,9 +192,9 @@ public static class Dots
             {
                 return _β.Length;
             }
-        }         
+        }
 
-        public void grow(int X)
+        public void connect(int X)
         {
             int j;
 
@@ -314,6 +314,37 @@ public static class Dots
         return s.ToString();
     }
 
+    public static void create(ref Dot[] Y, int count, IFunction F = null)
+    {
+        int j;
+
+        if (Y == null)
+        {
+            Y = new Dot[] 
+            {
+            };
+        }
+
+        if (Y == null || Y.Length < count)
+        {
+            var tmp = new Dot[count];
+
+            j = 0;
+
+            for (; Y != null && j < Y.Length; j++)
+            {
+                tmp[j] = Y[j];
+            }
+
+            for (; j < tmp.Length; j++)
+            {
+                tmp[j] = new Dot(F);
+            }
+
+            Y = tmp;
+        }
+    }
+
     public static Dot create()
     {
         return new Dot(null);
@@ -381,8 +412,8 @@ public static class Dots
             randomize(dots[i]);
         }
     }
-
-    public static void grow(int X, Dot[][] H, Dot[] Y)
+    
+    public static void connect(Dot[] Y, Dot[][] H, Dot[] X)
     {
         if (H != null)
         {
@@ -392,22 +423,17 @@ public static class Dots
 
                 for (int i = 0; i < h.Length; i++)
                 {
-                    h[i].grow(X);
+                    h[i].connect(X.Length);
                 }
 
-                X = h.Length;
+                X = h;
             }
         }
 
         for (int i = 0; Y != null && i < Y.Length; i++)
         {
-            Y[i].grow(X);
+            Y[i].connect(X.Length);
         }
-    }
-
-    public static void grow(Dot[] X, Dot[][] H, Dot[] Y)
-    {
-        grow(X.Length, H, Y);
     }
 
     public static void compute(Dot[] Y, Dot[][] H, Dot[] X)
@@ -432,7 +458,6 @@ public static class Dots
             Y[i].compute(X);
         }
     }
-
 
     public static double train(Dot[] Y, Dot[][] H, Dot[] T, double learningRate)
     {
@@ -514,7 +539,7 @@ public static class Dots
     {
         double Δ = 0.0;
 
-        for (int i = 0; i < Y.Length; i++)
+        for (int i = 0; Y != null && i < Y.Length; i++)
         {
             var o = Y[i];
 

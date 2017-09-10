@@ -69,7 +69,11 @@ namespace Recipes
                 Inspect($"H{l}", H[l], ConsoleColor.DarkGray);
             }
 
-            Inspect("Y", Y, ConsoleColor.Green);
+            if (Y != null)
+            {
+                Inspect("Y", Y, ConsoleColor.Green);
+
+            }
 
             Console.WriteLine("\r\nE:\r\n");
 
@@ -79,14 +83,14 @@ namespace Recipes
 
         static void Run(bool verbose)
         {
-            const int OUTPUTS = 7;
+            const int OUTPUTS = 3;
 
-            var H = new Dots.Dot[][]
+            Dots.Dot[][] H = new Dots.Dot[][]
             {
                Dots.create(OUTPUTS)
             };
 
-            var Y = Dots.create(OUTPUTS);
+            Dots.Dot[] Y = null;
             
             Test(Y, H);
 
@@ -94,7 +98,9 @@ namespace Recipes
             {
                 var X = Vector();
 
-                Dots.grow(X, H, Y);
+                Dots.create(ref Y, X.Length);
+
+                Dots.connect(Y, H, X);
 
                 Dots.compute(Y, H, X);
 
