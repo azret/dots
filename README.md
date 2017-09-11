@@ -84,14 +84,14 @@ One output layer.
 Dots.Dot[] Ȳ = null;
 ```
 
-*Note* that the **Ȳ** vector is passed by **ref** and is elastic. It will be sized to the longest verctor in training set **Ŷ**.
+*Note* that the **Ȳ** vector is passed by **ref** and will be sized to the longest vector in training set **Ŷ**.
 
 ```csharp
 for (int episode = 0; episode < 128 * 1024; episode++)
 {
-	var m = random(X̄.Length);
+	var M = random(X̄.Length);
 
-    Dots.sgd(X̄[m], ref Ȳ, null, learn : Ŷ[m], rate: 0.1);    
+	Dots.sgd(X̄[M], ref Ȳ, null, learn : Ŷ[M], rate: 0.1, Dots.tanh().F);    
 }
 
 Dots.compute(X̄, null, Ȳ);
