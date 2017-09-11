@@ -1,6 +1,6 @@
 # Dots
 
-An easy to use machine learning library written in C#.
+An easy to use machine learning library written in C#
 
 ## Identity Function
  
@@ -22,4 +22,4 @@ Dots.compute(X̄, null, Ȳ);
 ## Resources
 
 [Machine Learning (Stanford)](https://www.youtube.com/watch?v=UzxYlbK2c7E&list=PLJ_CMbwA6bT-n1W0mgOlYwccZ-j6gBXqE)
-
+[Tensor Flow](https://www.tensorflow.org)
