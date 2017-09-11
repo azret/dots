@@ -19,5 +19,7 @@ for (int episode = 0; episode< 128 * 1024; episode++)
 Dots.compute(X̄, null, Ȳ);
 ```
 
+## Resources
+
 [Machine Learning (Stanford)](https://www.youtube.com/watch?v=UzxYlbK2c7E&list=PLJ_CMbwA6bT-n1W0mgOlYwccZ-j6gBXqE)
 
