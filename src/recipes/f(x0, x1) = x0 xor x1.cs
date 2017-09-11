@@ -113,7 +113,7 @@ namespace Recipes
 
             Dots.Dot[][] H = new Dots.Dot[][]
             {
-                Dots.create(2, Dots.sigmoid().F) 
+                Dots.create(7, Dots.tanh().F) 
             };
 
             Dots.Dot[] Y = null;
