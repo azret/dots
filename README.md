@@ -1,6 +1,6 @@
 # Dots
 
-An easy to use machine learning library for .NET
+An easy to use machine learning library in C#
 
 ## Identity Function
  
@@ -18,3 +18,8 @@ for (int episode = 0; episode< 128 * 1024; episode++)
 
 Dots.compute(X̄, null, Ȳ);
 ```
+
+Many thanks to Andrew Ng
+
+[Machine Learning (Stanford)](https://www.youtube.com/watch?v=UzxYlbK2c7E&list=PLJ_CMbwA6bT-n1W0mgOlYwccZ-j6gBXqE)
+
