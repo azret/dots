@@ -11,7 +11,7 @@ for (int episode = 0; episode< 128 * 1024; episode++)
 
     Dots.compute(X̄, null, Ȳ);
     
-    Dots.train(Ȳ, null, learningRate: 0.1, learn : X̄);
+    Dots.train(Ȳ, null, learn : X̄, rate: 0.1);
 }
 
 Dots.compute(X̄, null, Ȳ);
