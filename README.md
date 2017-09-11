@@ -11,6 +11,7 @@ y = **f**(x0, x1, ..., xn) = Ω(**Σ**(x0·β0 + x1·β1 + ... + xn·βn + **βc
 It is updated according to the following
 
 βj(t) = βj(t-1) + **δ**·Xj
+
 βc(t) = βc(t-1) + **δ**
 
 with **δ** for Ŷ (the desired output) as
