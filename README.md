@@ -6,7 +6,13 @@ An easy to use machine learning library written in C#
 
 A Dot(**·**) is a high level linear unit that produces a single scalar value **y**
 
-y = **f**(x0, x1, ..., xn) = Ω(**Σ**(x0*β0 + x1*β1 + ... + xn*βn + **c**))
+y = **f**(x0, x1, ..., xn) = Ω(**Σ**(x0·β0 + x1·β1 + ... + xn·βn + **c**))
+
+It is updated according to the following rule
+
+βj(t) = βj(t+1) + **δ**·Xj
+
+where **δ** is produces by the learing algorithm.
 
 ## Identity Function
  
