@@ -25,10 +25,6 @@ where
 
 
 ## Identity Function
-
-
-
-
  
  ```csharp
 const int OUTPUTS = 7;
@@ -53,6 +49,45 @@ for (int episode = 0; episode < 128 * 1024; episode++)
 
 Dots.compute(X̄, null, Ȳ);
 ```
+
+
+## XOR
+ 
+static Dots.Dot[][] X̄ = new Dots.Dot[][] 
+{
+    new Dots.Dot[] { -1, -1 },
+    new Dots.Dot[] { -1, +1 },
+    new Dots.Dot[] { +1, -1 },
+    new Dots.Dot[] { +1, +1 },
+};
+
+static Dots.Dot[][] Ŷ = new Dots.Dot[][]
+{
+    new Dots.Dot[] { -1 },
+    new Dots.Dot[] { +1 },
+    new Dots.Dot[] { +1 },
+    new Dots.Dot[] { -1 },
+};         
+
+ ```csharp
+
+var H = new Dots.Dot[][]
+{
+	Dots.create(2, Dots.tanh().F) 
+};
+
+Dots.Dot[] Ȳ = null;
+
+for (int episode = 0; episode < 128 * 1024; episode++)
+{
+	var m = random(X̄.Length);
+
+    Dots.sgd(X̄[m], ref Ȳ, null, learn : Ŷ[m], rate: 0.1);    
+}
+
+Dots.compute(X̄, null, Ȳ);
+```
+
 
 ## Resources
 

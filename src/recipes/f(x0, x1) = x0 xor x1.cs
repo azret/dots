@@ -43,7 +43,7 @@ namespace Recipes
             Console.ResetColor();
         }
         
-        static Dots.Dot[][] Data = new Dots.Dot[][] 
+        static Dots.Dot[][] XOR = new Dots.Dot[][] 
         {
             new Dots.Dot[] { -1, -1 },
             new Dots.Dot[] { -1, 1 },
@@ -51,7 +51,7 @@ namespace Recipes
             new Dots.Dot[] { 1, 1 },
         };
 
-        static Dots.Dot[][] Answer = new Dots.Dot[][]
+        static Dots.Dot[][] Ŷ = new Dots.Dot[][]
         {
             new Dots.Dot[] { -1 },
             new Dots.Dot[] { 1 },
@@ -61,11 +61,11 @@ namespace Recipes
 
         static void Test(Dots.Dot[] Y, Dots.Dot[][] H)
         {
-            for (int i = 0; i < Data.Length; i++)
+            for (int i = 0; i < XOR.Length; i++)
             {
-                Dots.compute(Y, H, Data[i]);
+                Dots.compute(Y, H, XOR[i]);
 
-                Print("X", Data[i], Y);
+                Print("X", XOR[i], Y);
             }
         }
 
@@ -98,9 +98,16 @@ namespace Recipes
         {
             bool canceled = false;
 
+            Console.CancelKeyPress += (sender, e) =>
+            {
+                e.Cancel = true;
+
+                canceled = true;
+            };
+
             var H = new Dots.Dot[][]
             {
-                Dots.create(7, Dots.tanh().F) 
+                Dots.create(2, Dots.tanh().F) 
             };
 
             Dots.Dot[] Y = null;
@@ -117,16 +124,16 @@ namespace Recipes
 
                 H,
 
-                Data.Length,
+                XOR.Length,
                 
                 (k) => 
                 {
-                    return Data[k];
+                    return XOR[k];
                 },
 
                 (k) =>
                 {
-                    return Answer[k];
+                    return Ŷ[k];
                 },
 
                 32 * 32 * 1024,
