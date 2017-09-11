@@ -12,11 +12,14 @@ It is updated according to the following
 
 βj(t) = βj(t+1) + **δ**·Xj
 
-with **δ** for Ȳ as
+with **δ** for Ŷ (the desired output) as
 
-**δj** = - (yj - tj) · dyj · **α** 
+**δj** = - (yj - ŷj) · dyj · **α** 
 
-with **α** : learning rate & **dy** : partial derivative at Xj
+where 
+
+- **α** : learning rate
+- **dy** : partial derivative at Xj
 
 ## Identity Function
  
