@@ -26,10 +26,8 @@ where
 
 ## Identity Function
  
- ```csharp
-const int OUTPUTS = 7;
-
-var Ȳ = Dots.create(OUTPUTS);
+```csharp
+Dot[] Ȳ = null;
 
 for (int episode = 0; episode < 128 * 1024; episode++)
 {
@@ -51,8 +49,9 @@ Dots.compute(X̄, null, Ȳ);
 ```
 
 
-## XOR
- 
+## Xor
+
+```csharp 
 static Dots.Dot[][] X̄ = new Dots.Dot[][] 
 {
     new Dots.Dot[] { -1, -1 },
@@ -68,16 +67,26 @@ static Dots.Dot[][] Ŷ = new Dots.Dot[][]
     new Dots.Dot[] { +1 },
     new Dots.Dot[] { -1 },
 };         
+```
 
- ```csharp
+One hidden layer with two units.
 
+```csharp 
 var H = new Dots.Dot[][]
 {
 	Dots.create(2, Dots.tanh().F) 
 };
+```
 
+One output layer.
+
+```csharp 
 Dots.Dot[] Ȳ = null;
+```
 
+*Note* that the **Ȳ** vector is passed by **ref** and is elastic. It will be sized to the longest verctor in training set **Ŷ**.
+
+```csharp
 for (int episode = 0; episode < 128 * 1024; episode++)
 {
 	var m = random(X̄.Length);
