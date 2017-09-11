@@ -23,7 +23,7 @@ var Ȳ = Dots.create(OUTPUTS);
 
 for (int episode = 0; episode < 128 * 1024; episode++)
 {
-    var X̄ = new Dot[OUTPUTS] 
+    var X̄ = new Dot[] 
 	{
 		random(),
 		random(),
