@@ -43,34 +43,34 @@ namespace Recipes
             Console.ResetColor();
         }
         
-        static Dots.Dot[][] Table = new Dots.Dot[][] 
+        static Dots.Dot[][] Data = new Dots.Dot[][] 
         {
-            new Dots.Dot[] { 0, 0 },
-            new Dots.Dot[] { 0, 1 },
-            new Dots.Dot[] { 1, 0 },
+            new Dots.Dot[] { -1, -1 },
+            new Dots.Dot[] { -1, 1 },
+            new Dots.Dot[] { 1, -1 },
             new Dots.Dot[] { 1, 1 },
         };
 
         static Dots.Dot[][] Answer = new Dots.Dot[][]
         {
-            new Dots.Dot[] { 0 },
+            new Dots.Dot[] { -1 },
             new Dots.Dot[] { 1 },
             new Dots.Dot[] { 1 },
-            new Dots.Dot[] { 0 },
+            new Dots.Dot[] { -1 },
         };         
 
         static void Test(Dots.Dot[] Y, Dots.Dot[][] H)
         {
-            for (int i = 0; i < Table.Length; i++)
+            for (int i = 0; i < Data.Length; i++)
             {
-                Dots.compute(Y, H, Table[i]);
+                Dots.compute(Y, H, Data[i]);
 
-                Print("X", Table[i], Y);
+                Print("X", Data[i], Y);
             }
         }
 
         static void Run(Func<double> α, Dots.IFunction F, ref Dots.Dot[] Y, 
-            Dots.Dot[][] H, int K, Func<int, Dots.Dot[]> X, Func<int, Dots.Dot[]> T, int max, int episodes,
+            Dots.Dot[][] H, int K, Func<int, Dots.Dot[]> X, Func<int, Dots.Dot[]> T, int episodes,
             Func<int, Dots.Dot[], double, int> epoch)
         {
             
@@ -79,19 +79,8 @@ namespace Recipes
                 int k = Dots.Dot.random(K);
 
                 var x = X(k); var t = T(k);
-
-                if (max < 0)
-                {
-                    Dots.create(ref Y, t.Length, F);
-                }
-                else
-                {
-                    Dots.create(ref Y, Math.Min(max, t.Length), F);
-                }
-
-                Dots.connect(Y, H, x);
-
-                double E = Dots.sgd(x, Y, H, t, α());
+                
+                double E = Dots.sgd(x, ref Y, H, t, α());
 
                 if (E <= double.Epsilon || double.IsNaN(E) || double.IsInfinity(E))
                 {
@@ -109,19 +98,12 @@ namespace Recipes
         {
             bool canceled = false;
 
-            Dots.Dot[][] H = new Dots.Dot[][]
+            var H = new Dots.Dot[][]
             {
                 Dots.create(7, Dots.tanh().F) 
             };
 
             Dots.Dot[] Y = null;
-
-            Console.CancelKeyPress += (sender, e) =>
-            {
-                e.Cancel = true;
-
-                canceled = true; 
-            };
 
             Test(Y, H);
 
@@ -129,25 +111,23 @@ namespace Recipes
 
             Run(() => 0.1,
 
-                Dots.sigmoid().F,
+                Dots.tanh().F,
 
                 ref Y,
 
                 H,
 
-                Table.Length,
+                Data.Length,
                 
                 (k) => 
                 {
-                    return Table[k];
+                    return Data[k];
                 },
 
                 (k) =>
                 {
                     return Answer[k];
                 },
-
-                -1,
 
                 32 * 32 * 1024,
 

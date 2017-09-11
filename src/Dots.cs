@@ -480,7 +480,7 @@ public static class Dots
         }
     }
 
-    public static void compute(Dot[] Y, Dot[][] H, Dot[] X)
+    public static void compute(Dot[] Y, Dot[][] H, params Dot[] X)
     {
         if (H != null)
         {
@@ -515,6 +515,24 @@ public static class Dots
     public static double sgd(Dot[] X, Dot[] Y, Dot[][] H, Dot[] T, double learningRate)
     {
         double Δ;
+
+        if (X != null)
+        {
+            compute(Y, H, X);
+        }
+
+        sgd(Y, H, T, learningRate, out Δ);
+
+        return Δ;
+    }
+
+    public static double sgd(Dot[] X, ref Dot[] Y, Dot[][] H, Dot[] T, double learningRate, IFunction F = null)
+    {
+        double Δ;
+
+        Dots.create(ref Y, T.Length, F);
+
+        Dots.connect(Y, H, X);
 
         if (X != null)
         {

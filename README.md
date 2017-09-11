@@ -2,6 +2,7 @@
 
 An easy to use machine learning library written in C#
 
+
 ## Basic Concepts
 
 A Dot(**·**) is a high level linear unit that produces a single scalar value **y**
@@ -10,9 +11,8 @@ y = **f**(x0, x1, ..., xn) = Ω(**Σ**(xj·βj) + **βc**)
 
 It is updated according to the following
 
-βj(t) = βj(t-1) + **δ**·Xj
-
-βc(t) = βc(t-1) + **δ**
+- βj(t) = βj(t-1) + **δ**·Xj
+- βc(t) = βc(t-1) + **δ**
 
 with **δ** for Ŷ (the desired output) as
 
@@ -23,7 +23,12 @@ where
 - **α** : learning rate
 - **dy** : partial derivative at Xj
 
+
 ## Identity Function
+
+
+
+
  
  ```csharp
 const int OUTPUTS = 7;
