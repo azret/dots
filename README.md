@@ -1,8 +1,8 @@
-## Dots
+# Dots
 
 An easy to use machine learning library for .NET
 
-# Identity Function
+## Identity Function
  
  ```csharp
 const int OUTPUTS = 7;
