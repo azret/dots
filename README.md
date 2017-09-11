@@ -1,6 +1,6 @@
 # Dots
 
-An easy to use machine learning library in C#
+An easy to use machine learning library written in C#.
 
 ## Identity Function
  
