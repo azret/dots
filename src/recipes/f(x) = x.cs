@@ -106,7 +106,7 @@ namespace Recipes
 
                 var t = T(x);
 
-                double E = Dots.train(Y, H, t, α());
+                double E = Dots.sgd(Y, H, t, α());
 
                 if (E <= double.Epsilon || double.IsNaN(E) || double.IsInfinity(E))
                 {

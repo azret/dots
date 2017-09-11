@@ -72,7 +72,8 @@ namespace Recipes
         static void Run(Func<double> α, Dots.IFunction F, ref Dots.Dot[] Y, 
             Dots.Dot[][] H, int K, Func<int, Dots.Dot[]> X, Func<int, Dots.Dot[]> T, int max, int episodes,
             Func<int, Dots.Dot[], double, int> epoch)
-        {            
+        {
+            
             for (int episode = 0; episode < episodes; episode++)
             {
                 int k = Dots.Dot.random(K);
@@ -90,9 +91,7 @@ namespace Recipes
 
                 Dots.connect(Y, H, x);
 
-                Dots.compute(Y, H, x);
-
-                double E = Dots.train(Y, H, t, α());
+                double E = Dots.sgd(x, Y, H, t, α());
 
                 if (E <= double.Epsilon || double.IsNaN(E) || double.IsInfinity(E))
                 {
@@ -104,7 +103,6 @@ namespace Recipes
                     episode = epoch(episode, x, E);
                 }
             }
-
         }
     
         static void Main(string[] args)

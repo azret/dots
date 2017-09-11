@@ -6,8 +6,8 @@ public static class Dots
 {
     public interface IFunction
     {
-        double y(double x);
-        double dy(double y);
+        double y(double value);
+        double dy(double value);
     }
 
     public class Tanh : IFunction
@@ -269,6 +269,9 @@ public static class Dots
             }
         }
 
+        /// <summary>
+        ///  y = f(x0, x1, ..., xn) = Ω(Σ(x0*β0 + x1*β1 + ... + xn*βn + c))
+        /// </summary>
         public void compute(params Dot[] X)
         {
             int len = 0;
@@ -500,16 +503,30 @@ public static class Dots
         }
     }
 
-    public static double train(Dot[] Y, Dot[][] H, Dot[] T, double learningRate)
+    public static double sgd(Dot[] Y, Dot[][] H, Dot[] T, double learningRate)
     {
         double Δ;
 
-        train(Y, H, T, learningRate, out Δ);
+        sgd(Y, H, T, learningRate, out Δ);
 
         return Δ;
     }
 
-    public static void train(Dot[] Y, Dot[][] H, Dot[] T, double learningRate, out double Δ)
+    public static double sgd(Dot[] X, Dot[] Y, Dot[][] H, Dot[] T, double learningRate)
+    {
+        double Δ;
+
+        if (X != null)
+        {
+            compute(Y, H, X);
+        }
+
+        sgd(Y, H, T, learningRate, out Δ);
+
+        return Δ;
+    }
+
+    public static void sgd(Dot[] Y, Dot[][] H, Dot[] T, double learningRate, out double Δ)
     {
         Δ = 0.0;
 
@@ -580,6 +597,9 @@ public static class Dots
         }
     }
 
+    /// <summary>
+    /// Δ = 1⁄2 * Σ(y - t)² (Half of the sum of the squared errors)
+    /// </summary>
     public static double error(Dot[] Y, Dot[] T)
     {
         double Δ = 0.0;
