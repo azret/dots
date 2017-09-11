@@ -8,11 +8,15 @@ A Dot(**·**) is a high level linear unit that produces a single scalar value **
 
 y = **f**(x0, x1, ..., xn) = Ω(**Σ**(x0·β0 + x1·β1 + ... + xn·βn + **c**))
 
-It is updated according to the following rule
+It is updated according to the following
 
 βj(t) = βj(t+1) + **δ**·Xj
 
-where **δ** is produced by the specified learing algorithm.
+with **δ** for Ȳ as
+
+**δj** = - (yj - tj) · dyj · **α** 
+
+with **α** : learning rate & **dy** : partial derivative at Xj
 
 ## Identity Function
  
