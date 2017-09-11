@@ -12,7 +12,7 @@ It is updated according to the following rule
 
 βj(t) = βj(t+1) + **δ**·Xj
 
-where **δ** is produces by the learing algorithm.
+where **δ** is produced by the specified learing algorithm.
 
 ## Identity Function
  
