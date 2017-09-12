@@ -44,7 +44,7 @@ for (int episode = 0; episode < 128 * 1024; episode++)
         random()
     };
     
-    Dots.sgd(X̄, Ȳ, null, learn : X̄, rate: 0.1);    
+    Dots.sgd(X̄, ref Ȳ, null, learn : X̄, rate: 0.1);    
 }
 
 Dots.compute(X̄, null, Ȳ);
