@@ -51,6 +51,8 @@ Dots.compute(X̄, null, Ȳ);
 
 ## Xor
 
+Training examples
+
 ```csharp 
 static Dots.Dot[][] X̄ = new Dots.Dot[][] 
 {
@@ -59,7 +61,11 @@ static Dots.Dot[][] X̄ = new Dots.Dot[][]
     new Dots.Dot[] { +1, -1 },
     new Dots.Dot[] { +1, +1 },
 };
+```
 
+Target values
+
+```csharp 
 static Dots.Dot[][] Ŷ = new Dots.Dot[][]
 {
     new Dots.Dot[] { -1 },
@@ -69,34 +75,40 @@ static Dots.Dot[][] Ŷ = new Dots.Dot[][]
 };         
 ```
 
-One hidden layer with two units.
+One hidden layer with two units
 
 ```csharp 
 var H = new Dots.Dot[][]
 {
-	Dots.create(2, Dots.tanh().F) 
+    Dots.create(2, Dots.tanh().F) 
 };
 ```
 
-One output layer.
+One output layer
 
 ```csharp 
 Dots.Dot[] Ȳ = null;
 ```
 
-*Note* that the **Ȳ** vector is passed by **ref** and will be sized to the longest vector in training set **Ŷ**.
+*Note* that the **Ȳ** vector is passed by **ref** and will be sized to the longest vector in training set **Ŷ**
 
 ```csharp
 for (int episode = 0; episode < 128 * 1024; episode++)
 {
-	var M = random(X̄.Length);
+    var M = random(X̄.Length);
 
-	Dots.sgd(X̄[M], ref Ȳ, null, learn : Ŷ[M], rate: 0.1, Dots.tanh().F);    
+    Dots.sgd(X̄[M], ref Ȳ, null, learn : Ŷ[M], rate: 0.1, Dots.tanh().F);    
 }
 
 Dots.compute(X̄, null, Ȳ);
 ```
 
+```csharp
+[-1, -1] = [-0.999999999999999]
+[-1, +1] = [+0.999999999999999]
+[+1, -1] = [+0.999999999999999]
+[+1, +1] = [-0.999999999999999]
+```
 
 ## Resources
 
