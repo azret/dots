@@ -24,12 +24,18 @@ where
 - **dy** : partial derivative at Xj
 
 
-## Deeloping Intuition
+## Developing Intuition
 
 Start with a one-dimentional input vector **x̄**. In that case a single Dot(**·**) will represent a line. 
 
-![y=f(x)=a·x](/Line.png?raw=true "y=f(x)=a·x+b")
+y=f(x)=a·**x**+b
 
+The task of a learning algorithm is then to find proper values for coefficients **a** and **b** such that the desired **y** is produced.
+In other words, we are looking for a line that will map **x** into **y**. 
+
+A one-dimentional identity function, or y = **f**(x) = x => 1.0x + 0.0
+
+![y=f(x)=a·x](/Line.png?raw=true "y=f(x)=a·x+b")
 
 
 ## Identity Function (Linear Regression)
