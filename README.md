@@ -75,9 +75,19 @@ static Dots.Dot[][] Ŷ = new Dots.Dot[][]
 };         
 ```
 
-One hidden layer with two units
+[-1, 1]
 
+```csharp 
 var tanh = Dots.tanh().F;
+```
+
+[0, 1]
+
+```csharp 
+var sigmoid = Dots.sigmoid().F;
+```
+
+One hidden layer with two units
 
 ```csharp 
 var H = new Dots.Dot[][]
