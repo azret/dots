@@ -50,7 +50,7 @@ e.g. A one-dimensional identity function, or y = **f**(x) = x = 1.0x + 0.0
  
 The following example learns a multi-dimensional identity function
 
-ȳ = **f*(x̄) = x̄
+ȳ = **f**(x̄) = x̄
 
 ```csharp
 Dot[] Ȳ = null;
