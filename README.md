@@ -26,14 +26,14 @@ where
 
 ## Developing Intuition
 
-Start with a one-dimentional input vector **x̄**. In that case a single Dot(**·**) will represent a line. 
+Let's start with a one-dimensional input vector **x̄**. A Dot(**·**) is then defined as line. 
 
-y=f(x)=a·**x**+b
+y=**f**(x)=a·**x**+b
 
-The task of a learning algorithm is then to find proper values for coefficients **a** and **b** such that the desired **y** is produced.
-In other words, we are looking for a line that will map **x** into **y**. 
+The task of a learning algorithm is to find coefficients **a** and **b** such that the desired **y** is produced.
+In other words, we are looking for a line that will map **x** into **y**. Likewise, for higher dimensions the task is to find a plane, a hyperplane, etc... 
 
-A one-dimentional identity function, or y = **f**(x) = x => 1.0x + 0.0
+A one-dimensional identity function, or y = **f**(x) = x => 1.0x + 0.0 is shown below
 
 ![y=f(x)=a·x](/Line.png?raw=true "y=f(x)=a·x+b")
 
