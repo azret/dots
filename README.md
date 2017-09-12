@@ -130,7 +130,7 @@ Dots.Dot[] Ȳ = null;
 
 *Note* that the **Ȳ** vector is passed by **ref** and will be sized to the longest vector in the training set **Ŷ**.
 Likewise, the input connecions (dimensions) will grow as needed to support the longest X̄ vector seen during training.
-This allows for vatiable length feature vectors.
+This allows for variable length feature vectors.
 
 ```csharp
 for (int episode = 0; episode < 128 * 1024; episode++)
