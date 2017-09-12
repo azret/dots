@@ -23,7 +23,14 @@ where
 - **α** : learning rate
 - **dy** : partial derivative at Xj
 
-![y=f(x)=x](/Line.png?raw=true "y=f(x)=x")
+
+## Deeloping Intuition
+
+Start with a one-dimentional input vector **x̄**. In that case a single Dot(**·**) will represent a line. 
+
+![y=f(x)=a·x](/Line.png?raw=true "y=f(x)=a·x+b")
+
+
 
 ## Identity Function (Linear Regression)
  
