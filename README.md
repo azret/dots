@@ -23,6 +23,7 @@ where
 - **α** : learning rate
 - **dy** : partial derivative at Xj
 
+![y=f(x)=x](/Line.png?raw=true "y=f(x)=x")
 
 ## Identity Function (Linear Regression)
  
