@@ -16,12 +16,12 @@ It is updated according to the following
 
 with **δ** for Ŷ (the desired output) as
 
-**δj** = - (yj - ŷj) · dyj · **α** 
+**δj** = - (yj - ŷj) · δyj · **α** 
 
 where 
 
 - **α** : learning rate
-- **dy** : partial derivative at Xj
+- **δy** : partial derivative at Xj
 
 
 ## Developing Intuition
