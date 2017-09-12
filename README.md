@@ -24,7 +24,7 @@ where
 - **dy** : partial derivative at Xj
 
 
-## Identity Function
+## Identity Function (Linear Regression)
  
 ```csharp
 Dot[] Ȳ = null;
@@ -32,14 +32,14 @@ Dot[] Ȳ = null;
 for (int episode = 0; episode < 128 * 1024; episode++)
 {
     var X̄ = new Dot[] 
-	{
-		random(),
-		random(),
-		random(),
-		random(),
-		random(),
-		random(),
-		random()
+    {
+        random(),
+        random(),
+        random(),
+        random(),
+        random(),
+        random(),
+        random()
 	};
     
     Dots.sgd(X̄, Ȳ, null, learn : X̄, rate: 0.1);    
@@ -49,7 +49,7 @@ Dots.compute(X̄, null, Ȳ);
 ```
 
 
-## Xor
+## Xor Function (Multi-layer Feed Forward Network)
 
 Training examples
 
