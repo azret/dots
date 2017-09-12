@@ -26,7 +26,7 @@ where
 
 ## Developing Intuition
 
-Let's start with a one-dimensional input vector **x̄**. A Dot(**·**) is then defined as line. 
+Let's start with a one-dimensional input vector **x̄**. One single Dot(**·**) then simply a streight line 
 
 y=**f**(x)=a·**x**+b
 
