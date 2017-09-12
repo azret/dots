@@ -26,9 +26,11 @@ where
 
 ## Developing Intuition
 
-Let's start with a one-dimensional input vector **x̄**. One single Dot(**·**) then simply a streight line 
+Let's start with a one-dimensional input **x**. A single Dot(**·**) then is just a straight line.
 
 y=**f**(x)=a·**x**+b
+
+at some angle **a** and height **b**
 
 The task of a learning algorithm is to find coefficients **a** and **b** such that the desired **y** is produced.
 In other words, we are looking for a line that will map **x** into **y**. Likewise, for higher dimensions the task is to find a plane, a hyperplane, etc... 
