@@ -31,6 +31,7 @@ minimizing the cost function
 ## Developing Intuition
 
 Let's start with one-dimensional input vectors.
+
 A single Dot(**·**) then is just a straight line
 
 y=**f**(x)=a·**x**+b
@@ -38,10 +39,14 @@ y=**f**(x)=a·**x**+b
 at some angle **a** and height **b**.
 
 The task of a learning algorithm is to find coefficients **a** and **b** such that the desired **y** is produced.
-In other words, we are looking for a line that maps **x** into **y**.
-Likewise, for higher dimensions the task is to find a hyperplane (n-dimensions).
 
-e.g. A one-dimensional identity function, or y = **f**(x) = x = 1.0x + 0.0
+In other words, we are looking for a line that maps **x** into **y**.
+
+Likewise, for higher dimensions the task is to find a higher dimential object. A hyperplane for n-dimensions.
+
+ȳ = **f**(x̄) = βᵀx̄ + βc  
+
+e.g. A one-dimensional identity function, or y = **f**(x) = x = 1.0·x + 0.0
 
 ![y=f(x)=a·x](/Line.png?raw=true "y=f(x)=a·x+b")
 
@@ -73,6 +78,7 @@ for (int episode = 0; episode < 128 * 1024; episode++)
 
 Dots.compute(X̄, null, Ȳ);
 ```
+See [f(x) = x.cs](/src/recipes/f(x)%20%3D%20x.cs) for a full example.
 
 
 ## Xor Function (Multi-layer Feed Forward Network)
@@ -129,7 +135,9 @@ Dots.Dot[] Ȳ = null;
 ```
 
 *Note* that the **Ȳ** vector is passed by **ref** and will be sized to the longest vector in the training set **Ŷ**.
+
 Likewise, the input connecions (dimensions) will grow as needed to support the longest X̄ vector seen during training.
+
 This allows for variable length feature vectors.
 
 ```csharp

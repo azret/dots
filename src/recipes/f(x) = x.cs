@@ -83,7 +83,7 @@ namespace Recipes
 
         }
 
-        static void Run(Func<double> α, ref Dots.Dot[] Y, 
+        static void Train(Func<double> α, ref Dots.Dot[] Y, 
             Dots.Dot[][] H, Func<Dots.Dot[]> X, Func<Dots.Dot[], Dots.Dot[]> T, int max, int episodes,
             Func<int, Dots.Dot[], double, int> epoch)
         {            
@@ -123,34 +123,39 @@ namespace Recipes
     
         static void Main(string[] args)
         {
-            bool canceled = false;
+            bool canceled = false; int MAX = 32;
 
             Dots.Dot[][] H = new Dots.Dot[][]
             {
-                Dots.create(32) 
             };
 
             Dots.Dot[] Y = null;
 
             Console.CancelKeyPress += (sender, e) =>
             {
-                e.Cancel = true;
-
-                canceled = true; 
+                e.Cancel = canceled = true;
             };
 
             Test(Y, H);
 
-            double E = 0.0; double S = 0.0; double A = 0.0; double D = 0.0; double d = 0.0;
+            double E = 0.0; double S = 0.0; double A = 0.0; double D = 0.0; double R = 0.0;
 
-            Run(
+            Train(
                 
+                // Learning rate
+
                 () => 0.0001,
+
+                // Output vector
 
                 ref Y,
 
+                // Hidden layers
+
                 H,
                 
+                // Random input vector
+
                 ()=> 
                 {
                     return Vector();
@@ -161,7 +166,7 @@ namespace Recipes
                     return X;
                 },
 
-                32,
+                MAX,
 
                 32 * 32 * 1024,
 
@@ -175,14 +180,16 @@ namespace Recipes
 
                     D += A * A * (episode + 1);
 
-                    d += D * D * (episode + 1);
+                    R += D * D * (episode + 1);
 
                     if (double.IsNaN(D) || double.IsInfinity(D))
                     {
                         return int.MaxValue - 1;
                     }
 
-                    Console.WriteLine($"{1 / d} | {1 / D} | {1 / A} | {1 / S} | {1 / E}");
+                    // Error Wheel, Gears
+
+                    Console.WriteLine($"{1 / R} | {1 / D} | {1 / A} | {1 / S} | {1 / E}");
 
                     if (canceled)
                     {

@@ -31,7 +31,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>Recipes.Or</StartupObject>
+    <StartupObject>Recipes.Identity</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
