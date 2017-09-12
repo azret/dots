@@ -9,7 +9,7 @@ A Dot(**·**) is a high level linear unit that produces a single scalar value **
 
 y = **f**(x0, x1, ... , xn) = Ω(**Σ**(xj·βj) + **βc**)
 
-It is updated according to the following
+It is updated according to the following:
 
 - βj(t) = βj(t-1) + **δ**·Xj
 - βc(t) = βc(t-1) + **δ**
@@ -22,6 +22,10 @@ where
 
 - **α** : learning rate
 - **δy** : partial derivative at Xj
+
+minimizing the cost function
+
+1/2·**Σ**(yj - ŷj)²
 
 
 ## Developing Intuition
