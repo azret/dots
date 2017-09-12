@@ -26,6 +26,8 @@ where
 
 ## Identity Function (Linear Regression)
  
+The following example learns the ȳ = f(x̄) = x̄ function.
+
 ```csharp
 Dot[] Ȳ = null;
 
@@ -40,7 +42,7 @@ for (int episode = 0; episode < 128 * 1024; episode++)
         random(),
         random(),
         random()
-	};
+    };
     
     Dots.sgd(X̄, Ȳ, null, learn : X̄, rate: 0.1);    
 }
