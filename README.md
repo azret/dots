@@ -77,10 +77,12 @@ static Dots.Dot[][] Ŷ = new Dots.Dot[][]
 
 One hidden layer with two units
 
+var tanh = Dots.tanh().F;
+
 ```csharp 
 var H = new Dots.Dot[][]
 {
-    Dots.create(2, Dots.tanh().F) 
+    Dots.create(2, tanh) 
 };
 ```
 
@@ -97,11 +99,13 @@ for (int episode = 0; episode < 128 * 1024; episode++)
 {
     var M = random(X̄.Length);
 
-    Dots.sgd(X̄[M], ref Ȳ, null, learn : Ŷ[M], rate: 0.1, Dots.tanh().F);    
+    Dots.sgd(X̄[M], ref Ȳ, H, learn : Ŷ[M], rate: 0.1, tanh);    
 }
 
-Dots.compute(X̄, null, Ȳ);
+Dots.compute(X̄, H, Ȳ);
 ```
+
+After training
 
 ```csharp
 [-1, -1] = [-0.999999999999999]
