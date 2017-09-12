@@ -39,7 +39,7 @@ at some angle **a** and height **b**.
 The task of a learning algorithm is to find coefficients **a** and **b** such that the desired **y** is produced.
 In other words, we are looking for a line that will map **x** into **y**. Likewise, for higher dimensions the task is to find a plane, a hyperplane, etc... 
 
-A one-dimensional identity function, or y = **f**(x) = x => 1.0x + 0.0 is shown below
+e.g. A one-dimensional identity function, or y = **f**(x) = x = 1.0x + 0.0
 
 ![y=f(x)=a·x](/Line.png?raw=true "y=f(x)=a·x+b")
 
