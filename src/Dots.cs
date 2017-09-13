@@ -270,7 +270,7 @@ public static class Dots
         }
 
         /// <summary>
-        ///  y = f(x0, x1, ..., xn) = Ω(Σ(x0*β0 + x1*β1 + ... + xn*βn + c))
+        ///  ȳ = f(x̄) = βᵀx̄ + βc
         /// </summary>
         public void compute(params Dot[] X)
         {
@@ -317,7 +317,7 @@ public static class Dots
             }
         }
 
-        public void learn()
+        public void move()
         {
             int len = _length;
 
@@ -358,7 +358,7 @@ public static class Dots
         return s.ToString();
     }
 
-    public static void create(ref Dot[] Y, int count, IFunction F = null)
+    public static void grow(ref Dot[] Y, int count, IFunction F = null)
     {
         int j;
 
@@ -530,7 +530,7 @@ public static class Dots
     {
         double Δ;
 
-        Dots.create(ref Y, T.Length, F);
+        Dots.grow(ref Y, T.Length, F);
 
         Dots.connect(Y, H, X);
 
@@ -598,7 +598,7 @@ public static class Dots
 
         for (int i = 0; i < Y.Length; i++)
         {
-            Y[i].learn();
+            Y[i].move();
         }
 
         if (H != null)
@@ -609,7 +609,7 @@ public static class Dots
 
                 for (int i = 0; i < L.Length; i++)
                 {
-                    L[i].learn();
+                    L[i].move();
                 }
             }
         }

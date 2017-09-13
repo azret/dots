@@ -93,11 +93,11 @@ namespace Recipes
 
                 if (max < 0)
                 {
-                    Dots.create(ref Y, x.Length);
+                    Dots.grow(ref Y, x.Length);
                 }
                 else
                 {
-                    Dots.create(ref Y, Math.Min(max, x.Length));
+                    Dots.grow(ref Y, Math.Min(max, x.Length));
                 }
 
                 Dots.connect(Y, H, x);
