@@ -31,7 +31,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>Recipes.Identity</StartupObject>
+    <StartupObject>Recipes.Sight</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -44,7 +44,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Screen.txt" />
     <Compile Include="Dots.cs" />
+    <Compile Include="recipes\Sight.cs" />
     <Compile Include="recipes\f%28x0, x1%29 = x0 xor x1.cs" />
     <Compile Include="recipes\f%28x%29 = x.cs" />
   </ItemGroup>
