@@ -99,6 +99,12 @@ namespace Recipes
 
             Plant[] IRIS = Load();
 
+            // Shuffle the data
+
+            Dots.randomize(IRIS);
+
+            // Normalize
+
             foreach (var m in IRIS)
             {
                 Input.Add(new Dots.Dot[] 
@@ -171,7 +177,10 @@ namespace Recipes
                 {
                     E += error * error * (episode + 1);
 
-                    Console.WriteLine($"{1 / E}");
+                    if (episode % 100 == 0)
+                    {
+                        Console.WriteLine($"{1 / E}");
+                    }
 
                     if (canceled)
                     {

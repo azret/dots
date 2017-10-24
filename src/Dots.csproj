@@ -44,18 +44,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\recipes\f%28x%29 = x.cs">
+      <Link>recipes\f%28x%29 = x.cs</Link>
+    </Compile>
+    <Compile Include="..\recipes\f%28x0, x1%29 = x0 xor x1.cs">
+      <Link>recipes\f%28x0, x1%29 = x0 xor x1.cs</Link>
+    </Compile>
+    <Compile Include="..\recipes\iris.cs">
+      <Link>recipes\iris.cs</Link>
+    </Compile>
     <Compile Include="Dots.cs" />
-    <Compile Include="recipes\iris.cs" />
-    <Compile Include="recipes\f%28x0, x1%29 = x0 xor x1.cs" />
-    <Compile Include="recipes\f%28x%29 = x.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Dots.md">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
