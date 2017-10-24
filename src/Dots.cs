@@ -4,12 +4,19 @@ using System.Text;
 
 public static class Dots
 {
+    /// <summary>
+    /// Activating Function
+    /// </summary>
+    /// <see cref="https://en.wikipedia.org/wiki/Activation_function"/>
     public interface IFunction
     {
-        double y(double value);
-        double dy(double value);
+        double f(double value);
+        double df(double value);
     }
 
+    /// <summary>
+    /// Tanh Activation Function [1, 1]
+    /// </summary>
     public class Tanh : IFunction
     {
         public static IFunction New()
@@ -17,27 +24,30 @@ public static class Dots
             return new Tanh();
         }
 
-        public static double y(double value)
+        public static double f(double value)
         {
             return Math.Tanh(value);
         }
 
-        public static double dy(double value)
+        public static double df(double value)
         {
             return (1 - value * value);
         }
 
-        double IFunction.y(double value)
+        double IFunction.f(double value)
         {
-            return y(value);
+            return f(value);
         }
 
-        double IFunction.dy(double value)
+        double IFunction.df(double value)
         {
-            return dy(value);
+            return df(value);
         }
     }
 
+    /// <summary>
+    /// Logistic Activation Function [0, 1]
+    /// </summary>
     public class Sigmoid : IFunction
     {
         public static IFunction New()
@@ -45,27 +55,30 @@ public static class Dots
             return new Sigmoid();
         }
 
-        public static double y(double value)
+        public static double f(double value)
         {
             return 1 / (1 + Math.Exp(-value));
         }
 
-        public static double dy(double value)
+        public static double df(double value)
         {
             return value * (1 - value);
         }
 
-        double IFunction.y(double value)
+        double IFunction.f(double value)
         {
-            return y(value);
+            return f(value);
         }
 
-        double IFunction.dy(double value)
+        double IFunction.df(double value)
         {
-            return dy(value);
+            return df(value);
         }
     }
 
+    /// <summary>
+    /// Identity Activation Function
+    /// </summary>
     public class Identity : IFunction
     {
         public static IFunction New()
@@ -73,36 +86,51 @@ public static class Dots
             return new Identity();
         }
 
-        public static double y(double value)
+        public static double f(double value)
         {
             return value;
         }
 
-        public static double dy(double value)
+        public static double df(double value)
         {
             return 1.0;
         }
 
-        double IFunction.y(double value)
+        double IFunction.f(double value)
         {
-            return y(value);
+            return f(value);
         }
 
-        double IFunction.dy(double value)
+        double IFunction.df(double value)
         {
-            return dy(value);
+            return df(value);
         }
     }
 
+    /// <summary>
+    /// A Dot(·) is a high level linear unit that produces a single scalar value y
+    /// 
+    /// y = f(x0, x1, ... , xn) = Ω(Σ(xj·βj) + βc)
+    /// 
+    /// It is updated according to the following:
+    /// 
+    /// βj(t) = βj(t-1) + δ·Xj
+    /// βc(t) = βc(t-1) + δ
+    ///     with δ for Ŷ(the desired output) as
+    /// 
+    /// δj = - (yj - ŷj) · δyj · α
+    /// 
+    /// where
+    /// 
+    ///     α : learning rate
+    ///     δy : partial derivative at Xj
+    ///     
+    /// minimizing the cost function
+    /// 
+    ///     1/2·Σ(yj - ŷj)²
+    /// </summary>
     public class Dot
     {
-        public struct θ
-        {
-            public double a;
-            public double x;
-            public double b;
-        }
-
         public static readonly Random randomizer = new Random();
 
         public static double random()
@@ -113,6 +141,16 @@ public static class Dots
         public static int random(int max)
         {
             return randomizer.Next(max);
+        }
+
+        /// <summary>
+        /// Slope
+        /// </summary>
+        public struct θ
+        {
+            public double a;
+            public double x;
+            public double b;
         }
 
         θ[] _β;
@@ -313,7 +351,7 @@ public static class Dots
             }
             else
             {
-                _y = _F.y(y); _dy = _F.dy(_y.Value);
+                _y = _F.f(y); _dy = _F.df(_y.Value);
             }
         }
 

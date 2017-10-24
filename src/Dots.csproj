@@ -31,7 +31,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>System.Text.Map</StartupObject>
+    <StartupObject>Recipes.Iris</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -44,12 +44,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="experiments\Text.cs" />
     <Compile Include="Dots.cs" />
-    <Compile Include="experiments\Whitakar\Converter.cs" />
-    <Compile Include="experiments\Whitakar\Grammar.cs" />
-    <Compile Include="experiments\Words.cs" />
-    <Compile Include="experiments\sight.cs" />
+    <Compile Include="recipes\iris.cs" />
     <Compile Include="recipes\f%28x0, x1%29 = x0 xor x1.cs" />
     <Compile Include="recipes\f%28x%29 = x.cs" />
   </ItemGroup>

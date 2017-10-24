@@ -2,7 +2,7 @@
 
 namespace Recipes
 {
-    public static class Or
+    public static class Xor
     {
         static void Print(string header, Dots.Dot[] X, Dots.Dot[] Y)
         {
