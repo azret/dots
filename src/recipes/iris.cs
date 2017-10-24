@@ -5,16 +5,191 @@ namespace Recipes
 {
     public static class Iris
     {
+        static void Print(string header, Dots.Dot[] X, Dots.Dot[] Y, Dots.Dot[] Expected)
+        {
+            Console.ForegroundColor = ConsoleColor.White;
+
+            Console.Write("[");
+
+            for (var i = 0; X != null && i < X.Length; i++)
+            {
+                if (i > 0)
+                {
+                    Console.Write($", ");
+                }
+
+                Console.Write($"{X[i].y}");
+            }
+
+            Console.Write("]");
+
+            Console.Write(" = ");
+
+            Console.Write("[");
+            
+            for (var i = 0; Y != null && i < Y.Length; i++)
+            {
+                if (i > 0)
+                {
+                    Console.Write($", ");
+                }
+
+                Console.Write($"{Y[i].y}");
+            }
+
+            Console.Write("]");
+
+            Console.Write(" ~ ");
+
+            Console.Write("[");
+
+            for (var i = 0; Expected != null && i < Expected.Length; i++)
+            {
+                if (i > 0)
+                {
+                    Console.Write($", ");
+                }
+
+                Console.Write($"{Expected[i].y}");
+            }
+
+            Console.Write("]");
+
+            Console.WriteLine();
+
+            Console.ResetColor();
+        }
+         
+        static void Test(Dots.Dot[] X, Dots.Dot[] Y, Dots.Dot[][] H, Dots.Dot[] Expected)
+        {
+            Dots.compute(Y, H, X);
+
+            Print("X", X, Y, Expected);
+        }
+
+        static void Run(Func<double> α, Dots.IFunction F, ref Dots.Dot[] Y,
+            Dots.Dot[][] H, int K, Func<int, Dots.Dot[]> X, Func<int, Dots.Dot[]> T, int episodes,
+            Func<int, Dots.Dot[], double, int> epoch)
+        {
+
+            for (int episode = 0; episode < episodes; episode++)
+            {
+                int k = Dots.Dot.random(K);
+
+                var x = X(k); var t = T(k);
+
+                double E = Dots.sgd(x, ref Y, H, t, α());
+
+                if (E <= double.Epsilon || double.IsNaN(E) || double.IsInfinity(E))
+                {
+                    break;
+                }
+
+                if (epoch != null)
+                {
+                    episode = epoch(episode, x, E);
+                }
+            }
+        }
+
         static void Main(string[] args)
         {
-            var Data = Load();
+            var Input = new System.Collections.Generic.List<Dots.Dot[]>();
+            var Output = new System.Collections.Generic.List<Dots.Dot[]>();
 
-            foreach (var plant in Data)
+            Plant[] IRIS = Load();
+
+            foreach (var m in IRIS)
             {
-                Console.WriteLine(plant);
+                Input.Add(new Dots.Dot[] 
+                {
+                    m.SepalLength * 0.1,
+                    m.SepalWidth * 0.1,
+                    m.PetalLength * 0.1,
+                    m.PetalWidth * 0.1,
+                });
+
+                switch (m.Name)
+                {
+                    case "Iris-setosa":
+                        Output.Add(new Dots.Dot[] { 1, 0, 0 });
+                        break;
+                    case "Iris-versicolor":
+                        Output.Add(new Dots.Dot[] { 0, 1, 0 });
+                        break;
+                    case "Iris-virginica":
+                        Output.Add(new Dots.Dot[] { 0, 0, 1 });
+                        break;
+                    default:
+                        throw new ArgumentException();
+                }
+            }
+             
+            bool canceled = false;
+
+            Console.CancelKeyPress += (sender, e) =>
+            {
+                e.Cancel = canceled = true;
+            };
+
+            var H = new Dots.Dot[][]
+            {
+                // No hiddent layer
+            };
+
+            Dots.Dot[] Y = null;
+
+            var i = Dots.Dot.random(Input.Count);
+
+            Test(Input[i], Y, H, Output[i]);
+
+            double E = 0.0;
+
+            Run(() => 0.01,
+
+                null,
+
+                ref Y,
+
+                H,
+
+                IRIS.Length,
+
+                (k) =>
+                {
+                    return Input[k];
+                },
+
+                (k) =>
+                {
+                    return Output[k];
+                },
+
+                32 * 1024,
+
+                (episode, X, error) =>
+                {
+                    E += error * error * (episode + 1);
+
+                    Console.WriteLine($"{1 / E}");
+
+                    if (canceled)
+                    {
+                        episode = int.MaxValue - 1;
+                    }
+
+                    return episode;
+                }
+
+            );
+
+            for (i = 0; i < Input.Count; i++)
+            {
+                Test(Input[i], Y, H, Output[i]);
             }
 
             Console.ReadKey();
+
         }
 
         public class Plant
