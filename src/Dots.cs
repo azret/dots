@@ -177,29 +177,30 @@
             }
         }
 
+        /// <summary>
+        /// ƒ = βᵀχ + ζ
+        /// </summary>
         public unsafe void compute(Dot[] X) {
             System.Diagnostics.Debug.Assert(X.Length == β.Length);
 
             double Σ = 0, ξ;
 
-            fixed (Coefficient* w = β) {
+            ζ.ξ = ξ = 1; Σ += ζ.β * ξ;
+
+            fixed (Coefficient* p = β) {
                 for (int j = 0; j < X.Length; j++) {
-                    w[j].ξ = ξ = X[j].ƒ;
-                    Σ += w[j].β * ξ;
+                    p[j].ξ = ξ = X[j].ƒ; Σ += p[j].β * ξ;
                 }
             }
 
-            ζ.ξ = ξ = 1;
-            Σ += ζ.β * ξ;
+            ƒ = Σ; δƒ = 1;
 
-            if (Ω == null) {
-                ƒ = Σ; δƒ = 1;
-            } else {
+            if (Ω != null) {
                 ƒ = Ω.f(Σ); δƒ = Ω.df(Σ, ƒ);
             }
         }
 
-#if !UNSAFE
+#if SAFE
         [Runtime.CompilerServices.MethodImpl(Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
         public void move(double α, double μ) {
             double Δ = α * δ; double ϟ;
@@ -214,7 +215,7 @@
         }
 #endif
 
-#if UNSAFE
+#if !SAFE
         [Runtime.CompilerServices.MethodImpl(Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
         unsafe static void move(Coefficient* c, int k, int r, double Δ, double μ) {
             double ϟ;
@@ -261,9 +262,11 @@
                 case 1:
                     ϟ = Δ * c->ξ; c->β += ϟ + μ * c->θ; c->θ = ϟ; c++;
                     break;
+                case 0:
+                    break;
                 default:
                     throw new InvalidOperationException();
-            } 
+            }
         }
         [Runtime.CompilerServices.MethodImpl(Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
         public unsafe void move(double α, double μ) {
@@ -343,11 +346,13 @@
             double Ε = 0.0;
 
             for (int i = 0; i < Y.Length; i++) {
-                double ϟ = Y[i].ƒ - T[i].ƒ;
+                Dot y = Y[i]; Dot t = T[i];
+
+                double ϟ;
+
+                ϟ = y.ƒ - t.ƒ; y.δ = -ϟ * y.δƒ;
 
                 Ε += ϟ * ϟ;
-
-                Y[i].δ = - ϟ * Y[i].δƒ;
             }
 
             Ε *= 0.5;
@@ -356,21 +361,21 @@
 
             if (H != null) {
                 for (int l = H.Length - 1; l >= 0; l--) {
-                    Dot[] P = h; h = H[l];
+                    Dot[] U = h; h = H[l]; Dot u; double Δ;
 
                     for (int i = 0; i < h.Length; i++) {
-                        double Δ = 0.0;
+                        Δ = 0.0;
 
-                        for (int j = 0; j < P.Length; j++) {
-                            Δ += P[j].δ * P[j].β[i].β;
+                        for (int j = 0; j < U.Length; j++) {
+                            u = U[j]; Δ += u.δ * u.β[i].β;
                         }
 
-                        h[i].δ = Δ * h[i].δƒ;
+                        u = h[i]; u.δ = Δ * u.δƒ;
                     }
                 }
             }
 
-            for (int i = 0; Y != null && i < Y.Length; i++) {
+            for (int i = 0; i < Y.Length; i++) {
                 Y[i].move(learningRate, momentum);
             }
 

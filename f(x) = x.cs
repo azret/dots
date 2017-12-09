@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
 
 public static class App {
     static void Inspect(string header, Dot[] A, ConsoleColor color, bool verbose) {
@@ -37,17 +35,13 @@ public static class App {
 
     static Dot[] Vector(int size) {
         Dot[] A = new Dot[size];
-
         for (var i = 0; i < A.Length; i++) {
             A[i] = Dot.random(1000) / (1000 * 1.0);
         }
-
         return A;
     }
 
     static void Test(Dot[] X, Dot[][] H, Dot[] Y, bool verbose) {
-        Console.WriteLine("\r\n");
-
         Dots.compute(X, H, Y);
 
         if (H != null && verbose) {
@@ -61,13 +55,12 @@ public static class App {
         }
 
         Inspect("X", X, ConsoleColor.Green, verbose);
+        Console.WriteLine();
     }
 
     static void Train(int episodes, Func<double> α, Func<double> μ, Dot[] Y,
         Dot[][] H, Func<Dot[]> X, Func<Dot[], Dot[]> T,
         Func<int, Dot[], double, double> epoch) {
-
-        object spin = new object();
 
         for (var i = 0; i < episodes; i++) {
             var x = X();
@@ -84,8 +77,6 @@ public static class App {
                 e = epoch(i, x, e);
             }
 
-            System.Threading.Thread.Sleep(0);
-
             if (e <= double.Epsilon || double.IsNaN(e) || double.IsInfinity(e)) {
                 return;
             }
@@ -93,8 +84,7 @@ public static class App {
     }
 
     static void Main(string[] args) {
-
-        int SIZE = 17;
+        int SIZE = 7;
 
         Dot[][] H = new Dot[][]
         {
@@ -118,13 +108,13 @@ public static class App {
 
         Test(Vector(SIZE), H, Y, verbose: false);
 
-        double E = 0.0; double S = 0.0; double A = 0.0; double D = 0.0; double R = 0.0;
+        double E0 = 0.0; double E1 = 0.0; double E2 = 0.0; double E3 = 0.0; double E4 = 0.0;
 
         Train(
 
-            // 8 * 16 * 32 * 64 * 128,
+            // Number of episodes
 
-            32 * 64 * 128,
+            8 * 32 * 64 * 128,
 
             // Learning rate
 
@@ -160,34 +150,33 @@ public static class App {
                 return T;
             },
 
-            (episode, X, error) => {
+            // Error Wheel, Gears
 
-                E += error * error * (episode + 1);
+            (i, X, E) => {
 
-                S += E * E * (episode + 1);
+                E0 += E * E * (i + 1);
 
-                A += S * S * (episode + 1);
+                E1 += E0 * E0 * (i + 1);
 
-                D += A * A * (episode + 1);
+                E2 += E1 * E1 * (i + 1);
 
-                R += D * D * (episode + 1);
+                E3 += E2 * E2 * (i + 1);
 
-                // Error Wheel, Gears
+                E4 += E3 * E3 * (i + 1);
 
-                if (episode % 256 == 0) {
-                    Console.WriteLine($"[{episode:n0}] - {1 / R} | {1 / D} | {1 / A} | {1 / S} | {1 / E}");
+                if (i % 256 == 0) {
+                    Console.WriteLine($"[{i:n0}] - {1 / E4} | {1 / E3} | {1 / E2} | {1 / E1} | {1 / E0}");
                 }
 
                 if (canceled) {
-                    error = double.NaN;
+                    E = double.NaN;
                 }
 
-                return error;
+                return E;
             }
 
         );
 
-        Test(Vector(SIZE), H, Y, verbose: false);
         Test(Vector(SIZE), H, Y, verbose: false);
 
         Console.ReadKey();
