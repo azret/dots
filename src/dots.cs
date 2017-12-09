@@ -1,4 +1,4 @@
-﻿namespace System {
+﻿namespace System.Dots {
     public interface IFunction {
         double f(double x);
         double df(double x, double y);
@@ -127,6 +127,14 @@
             ζ.β = random();
         }
 
+        public double δ;
+
+        public IFunction Ω;
+
+        public double ƒ;
+
+        public double δƒ;
+
         public struct Coefficient {
             public double ξ;
             public double β;
@@ -136,14 +144,6 @@
         public Coefficient[] β;
 
         public Coefficient ζ;
-
-        public IFunction Ω;
-
-        public double ƒ;
-
-        public double δƒ;
-
-        public double δ;
 
         public static implicit operator Dot(double value) {
             return new Dot() { ƒ = value };
