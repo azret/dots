@@ -16,3 +16,6 @@ x86/
 
 *.suo
 *.user
+*.psess
+*.vsp
+*.vspx

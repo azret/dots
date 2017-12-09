@@ -109,7 +109,7 @@
     }
 
     public class Dot {
-        public static readonly Random randomizer = new Random();
+        public static readonly Random randomizer = new Random(137);
 
         public static double random() {
             return randomizer.NextDouble();
@@ -124,7 +124,7 @@
                 β[j].β = random();
             }
 
-            ζ = random();
+            ζ.β = random();
         }
 
         public struct Coefficient {
@@ -135,7 +135,7 @@
 
         public Coefficient[] β;
 
-        public double ζ;
+        public Coefficient ζ;
 
         public IFunction Ω;
 
@@ -177,37 +177,107 @@
             }
         }
 
-        public void compute(Dot[] X) {
+        public unsafe void compute(Dot[] X) {
             System.Diagnostics.Debug.Assert(X.Length == β.Length);
 
-            double y = ζ * 1.0;
+            double Σ = 0, ξ;
 
-            for (int j = 0; j < β.Length; j++) {
-                double ξ = X[j].ƒ;
-
-                β[j].ξ = ξ;
-
-                y += β[j].β * ξ;
+            fixed (Coefficient* w = β) {
+                for (int j = 0; j < X.Length; j++) {
+                    w[j].ξ = ξ = X[j].ƒ;
+                    Σ += w[j].β * ξ;
+                }
             }
+
+            ζ.ξ = ξ = 1;
+            Σ += ζ.β * ξ;
 
             if (Ω == null) {
-                ƒ = y; δƒ = 1.0;
+                ƒ = Σ; δƒ = 1;
             } else {
-                ƒ = Ω.f(y); δƒ = Ω.df(y, ƒ);
+                ƒ = Ω.f(Σ); δƒ = Ω.df(Σ, ƒ);
             }
         }
 
-        public void move(double μ) {
-            ζ += δ * 1.0;
-
+#if !UNSAFE
+        [Runtime.CompilerServices.MethodImpl(Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+        public void move(double α, double μ) {
+            double Δ = α * δ; double ϟ;
             for (int j = 0; j < β.Length; j++) {
-                double ϟ = δ * β[j].ξ;
-
+                ϟ = Δ * β[j].ξ;
                 β[j].β += ϟ + μ * β[j].θ;
-
                 β[j].θ = ϟ;
             }
+            ϟ = Δ * ζ.ξ;
+            ζ.β += ϟ + μ * ζ.θ;
+            ζ.θ = ϟ;
         }
+#endif
+
+#if UNSAFE
+        [Runtime.CompilerServices.MethodImpl(Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+        unsafe static void move(Coefficient* c, int k, int r, double Δ, double μ) {
+            double ϟ;
+            while (k-- > 0) {
+                ϟ = Δ * c->ξ; c->β += ϟ + μ * c->θ; c->θ = ϟ; c++;
+                ϟ = Δ * c->ξ; c->β += ϟ + μ * c->θ; c->θ = ϟ; c++;
+                ϟ = Δ * c->ξ; c->β += ϟ + μ * c->θ; c->θ = ϟ; c++;
+                ϟ = Δ * c->ξ; c->β += ϟ + μ * c->θ; c->θ = ϟ; c++;
+                ϟ = Δ * c->ξ; c->β += ϟ + μ * c->θ; c->θ = ϟ; c++;
+                ϟ = Δ * c->ξ; c->β += ϟ + μ * c->θ; c->θ = ϟ; c++;
+                ϟ = Δ * c->ξ; c->β += ϟ + μ * c->θ; c->θ = ϟ; c++;
+            }
+            switch (r) {
+                case 6:
+                    ϟ = Δ * c->ξ; c->β += ϟ + μ * c->θ; c->θ = ϟ; c++;
+                    ϟ = Δ * c->ξ; c->β += ϟ + μ * c->θ; c->θ = ϟ; c++;
+                    ϟ = Δ * c->ξ; c->β += ϟ + μ * c->θ; c->θ = ϟ; c++;
+                    ϟ = Δ * c->ξ; c->β += ϟ + μ * c->θ; c->θ = ϟ; c++;
+                    ϟ = Δ * c->ξ; c->β += ϟ + μ * c->θ; c->θ = ϟ; c++;
+                    ϟ = Δ * c->ξ; c->β += ϟ + μ * c->θ; c->θ = ϟ; c++;
+                    break;
+                case 5:
+                    ϟ = Δ * c->ξ; c->β += ϟ + μ * c->θ; c->θ = ϟ; c++;
+                    ϟ = Δ * c->ξ; c->β += ϟ + μ * c->θ; c->θ = ϟ; c++;
+                    ϟ = Δ * c->ξ; c->β += ϟ + μ * c->θ; c->θ = ϟ; c++;
+                    ϟ = Δ * c->ξ; c->β += ϟ + μ * c->θ; c->θ = ϟ; c++;
+                    ϟ = Δ * c->ξ; c->β += ϟ + μ * c->θ; c->θ = ϟ; c++;
+                    break;
+                case 4:
+                    ϟ = Δ * c->ξ; c->β += ϟ + μ * c->θ; c->θ = ϟ; c++;
+                    ϟ = Δ * c->ξ; c->β += ϟ + μ * c->θ; c->θ = ϟ; c++;
+                    ϟ = Δ * c->ξ; c->β += ϟ + μ * c->θ; c->θ = ϟ; c++;
+                    ϟ = Δ * c->ξ; c->β += ϟ + μ * c->θ; c->θ = ϟ; c++;
+                    break;
+                case 3:
+                    ϟ = Δ * c->ξ; c->β += ϟ + μ * c->θ; c->θ = ϟ; c++;
+                    ϟ = Δ * c->ξ; c->β += ϟ + μ * c->θ; c->θ = ϟ; c++;
+                    ϟ = Δ * c->ξ; c->β += ϟ + μ * c->θ; c->θ = ϟ; c++;
+                    break;
+                case 2:
+                    ϟ = Δ * c->ξ; c->β += ϟ + μ * c->θ; c->θ = ϟ; c++;
+                    ϟ = Δ * c->ξ; c->β += ϟ + μ * c->θ; c->θ = ϟ; c++;
+                    break;
+                case 1:
+                    ϟ = Δ * c->ξ; c->β += ϟ + μ * c->θ; c->θ = ϟ; c++;
+                    break;
+                default:
+                    throw new InvalidOperationException();
+            } 
+        }
+        [Runtime.CompilerServices.MethodImpl(Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+        public unsafe void move(double α, double μ) {
+            double Δ = α * δ;
+
+            fixed (Coefficient* p = β) {
+                move(p, β.Length / 7, β.Length % 7, Δ, μ);
+            }
+
+            fixed (Coefficient* p = &ζ) {
+                double ϟ = Δ * p->ξ; p->β += ϟ + μ * p->θ; p->θ = ϟ;
+            }
+        }
+#endif
     }
 
     public static class Dots {
@@ -277,7 +347,7 @@
 
                 Ε += ϟ * ϟ;
 
-                Y[i].δ = - ϟ * Y[i].δƒ * learningRate;
+                Y[i].δ = - ϟ * Y[i].δƒ;
             }
 
             Ε *= 0.5;
@@ -295,13 +365,13 @@
                             Δ += P[j].δ * P[j].β[i].β;
                         }
 
-                        h[i].δ = Δ * h[i].δƒ * learningRate;
+                        h[i].δ = Δ * h[i].δƒ;
                     }
                 }
             }
 
             for (int i = 0; Y != null && i < Y.Length; i++) {
-                Y[i].move(momentum);
+                Y[i].move(learningRate, momentum);
             }
 
             if (H != null) {
@@ -309,7 +379,7 @@
                     h = H[l];
 
                     for (int i = 0; i < h.Length; i++) {
-                        h[i].move(momentum);
+                        h[i].move(learningRate, momentum);
                     }
                 }
             }

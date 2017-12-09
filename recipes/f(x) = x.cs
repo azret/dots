@@ -1,13 +1,15 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 
 public static class App {
-    static void Inspect(string header, Dot[] A, ConsoleColor color) {
-        Console.WriteLine($"{header}:\r\n");
+    static void Inspect(string header, Dot[] A, ConsoleColor color, bool verbose) {
+        Console.WriteLine($"\r\n{header}:\r\n");
         for (var i = 0; i < A.Length; i++) {
             Console.ForegroundColor = color;
-            Console.Write($"{A[i].ƒ}");
-            if (A[i].β != null) {
+            Console.Write($"{Math.Round(A[i].ƒ, 2)}");
+            if (A[i].β != null && verbose) {
                 Console.ForegroundColor = ConsoleColor.DarkGray;
                 int c = 0;
                 for (int j = 0; j < A[i].β.Length; j++) {
@@ -24,7 +26,11 @@ public static class App {
                 }
             }
             Console.ResetColor();
-            Console.WriteLine();
+            if (((i + 1) % 7) == 0) {
+                Console.WriteLine();
+            } else {
+                Console.Write($", ");
+            }
         }
         Console.WriteLine();
     }
@@ -39,81 +45,86 @@ public static class App {
         return A;
     }
 
-    static void Test(Dot[] Y, Dot[][] H, int size) {
+    static void Test(Dot[] X, Dot[][] H, Dot[] Y, bool verbose) {
         Console.WriteLine("\r\n");
-
-        Dot[] X;
-
-        X = Vector(size);
 
         Dots.compute(X, H, Y);
 
-        if (H != null) {
+        if (H != null && verbose) {
             for (int l = 0; l < H.Length; l++) {
-                Inspect($"H{l}", H[l], ConsoleColor.White);
+                Inspect($"H{l}", H[l], ConsoleColor.White, verbose);
             }
         }
 
         if (Y != null) {
-            Inspect("Y", Y, ConsoleColor.Yellow);
+            Inspect("Y", Y, ConsoleColor.Yellow, verbose);
         }
 
-        Inspect("X", X, ConsoleColor.Green);
-
-        Console.WriteLine("\r\nE:\r\n");
-
-        Console.WriteLine($"{Dots.error(Y, X)}");
-
+        Inspect("X", X, ConsoleColor.Green, verbose);
     }
 
     static void Train(int episodes, Func<double> α, Func<double> μ, Dot[] Y,
         Dot[][] H, Func<Dot[]> X, Func<Dot[], Dot[]> T,
         Func<int, Dot[], double, double> epoch) {
 
-        for (int i = 0; i < episodes; i++) {
-            var x = X();
+        object spin = new object();
 
-            Dots.compute(x, H, Y);
+        for (var i = 0; i < episodes; i++) {
+            var x = X();
 
             var t = T(x);
 
-            var E = Dots.sgd(H, Y, t, α(), μ());
+            double e;
+
+            Dots.compute(x, H, Y);
+
+            e = Dots.sgd(H, Y, t, α(), μ());
 
             if (epoch != null) {
-                E = epoch(i, x, E);
+                e = epoch(i, x, e);
             }
 
-            if (E <= double.Epsilon || double.IsNaN(E) || double.IsInfinity(E)) {
+            System.Threading.Thread.Sleep(0);
+
+            if (e <= double.Epsilon || double.IsNaN(e) || double.IsInfinity(e)) {
                 return;
             }
         }
     }
 
     static void Main(string[] args) {
-        bool canceled = false;
 
-        Console.CancelKeyPress += (sender, e) => {
-            e.Cancel = canceled = true;
-        };
-
-        int SIZE = 7;
+        int SIZE = 17;
 
         Dot[][] H = new Dot[][]
         {
-           Dots.create(SIZE, Softplus.Ω),
+            Dots.create(SIZE, Sigmoid.Ω),
         };
 
         Dot[] Y = Dots.create(SIZE, Identity.Ω);
 
         Dots.connect(SIZE, H, Y);
-        
-        Test(Y, H, SIZE);
+
+        bool canceled = false;
+
+        Console.CancelKeyPress += (sender, e) => {
+
+            if (canceled) {
+                Process.GetCurrentProcess().Kill();
+            }
+
+            e.Cancel = canceled = true;
+        };
+
+        Test(Vector(SIZE), H, Y, verbose: false);
 
         double E = 0.0; double S = 0.0; double A = 0.0; double D = 0.0; double R = 0.0;
 
         Train(
 
-            8 * 16 * 32 * 64 * 128,
+            // 8 * 16 * 32 * 64 * 128,
+
+            32 * 64 * 128,
 
             // Learning rate
 
@@ -121,7 +132,7 @@ public static class App {
 
             // Momentum
 
-            () => 0.01,
+            () => 0.3,
 
             // Output vector
 
@@ -163,8 +174,8 @@ public static class App {
 
                 // Error Wheel, Gears
 
-                if (episode % 37 == 0) {
-                    Console.WriteLine($"{1 / R} | {1 / D} | {1 / A} | {1 / S} | {1 / E}");
+                if (episode % 256 == 0) {
+                    Console.WriteLine($"[{episode:n0}] - {1 / R} | {1 / D} | {1 / A} | {1 / S} | {1 / E}");
                 }
 
                 if (canceled) {
@@ -176,7 +187,8 @@ public static class App {
 
         );
 
-        Test(Y, H, SIZE);
+        Test(Vector(SIZE), H, Y, verbose: false);
+        Test(Vector(SIZE), H, Y, verbose: false);
 
         Console.ReadKey();
     }
