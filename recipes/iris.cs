@@ -5,7 +5,7 @@ namespace Recipes
 {
     public static class Iris
     {
-        static void Print(string header, Dots.Dot[] X, Dots.Dot[] Y, Dots.Dot[] Expected)
+        static void Print(string header, Dots.Dot[] X, Dots.Dot[] Ycomputed, Dots.Dot[] Yexpected)
         {
             Console.ForegroundColor = ConsoleColor.White;
 
@@ -26,15 +26,29 @@ namespace Recipes
             Console.Write(" = ");
 
             Console.Write("[");
-            
-            for (var i = 0; Y != null && i < Y.Length; i++)
+
+            int max = -1;
+
+            for (var i = 0; Ycomputed != null && i < Ycomputed.Length; i++)
             {
                 if (i > 0)
                 {
                     Console.Write($", ");
                 }
 
-                Console.Write($"{Y[i].y}");
+                if (max < 0)
+                {
+                    max = i;
+                }
+                else
+                {
+                    if (Ycomputed[i].y > Ycomputed[max].y)
+                    {
+                        max = i;
+                    }
+                }
+
+                Console.Write($"{Ycomputed[i].y}");
             }
 
             Console.Write("]");
@@ -43,14 +57,38 @@ namespace Recipes
 
             Console.Write("[");
 
-            for (var i = 0; Expected != null && i < Expected.Length; i++)
+            for (var i = 0; Yexpected != null && i < Yexpected.Length; i++)
             {
                 if (i > 0)
                 {
                     Console.Write($", ");
                 }
 
-                Console.Write($"{Expected[i].y}");
+                Console.Write($"{Yexpected[i].y}");
+            }
+
+            Console.Write("]");
+
+            Console.Write(" - ");
+
+            Console.Write("[");
+
+            for (var i = 0; Ycomputed != null && i < Ycomputed.Length; i++)
+            {
+                if (i > 0)
+                {
+                    Console.Write($", ");
+                }
+                
+                if (i == max)
+                {
+                    Console.Write($"{1}");
+                }
+                else
+                {
+                    Console.Write($"{0}");
+                }
+
             }
 
             Console.Write("]");
@@ -92,8 +130,41 @@ namespace Recipes
             }
         }
 
+        static string itoa(int n)
+        {
+            string a = null;
+
+            while (n > 0)
+            {
+                Console.WriteLine(n % 10);
+                n = n / 10;
+            }
+
+            return a;
+        }
+
+        static string itoh(int n)
+        {
+            char[] digest = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+
+            string a = null; int b = digest.Length;
+
+            while (n > 0)
+            {
+                Console.WriteLine(digest[n % b]);
+                n = n / b;
+            }
+
+            return a;
+        }
+
         static void Main(string[] args)
         {
+            itoh(16);
+
+            Console.ReadKey();
+            return;
+
             var Input = new System.Collections.Generic.List<Dots.Dot[]>();
             var Output = new System.Collections.Generic.List<Dots.Dot[]>();
 

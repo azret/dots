@@ -1,81 +1,53 @@
 ﻿using System;
+using System.Threading.Tasks;
 
-namespace Recipes
-{
-    public static class Identity
-    {
-        static void Print(string header, Dots.Dot[] vec)
-        {
-            Console.ForegroundColor = ConsoleColor.White;
-
+namespace Recipes {
+    public static class Identity {
+        static void Inspect(string header, Dots.Dot[] vec, ConsoleColor color) {
             Console.WriteLine($"{header}:\r\n");
 
-            for (var i = 0; i < vec.Length; i++)
-            {
-                Console.WriteLine($"{vec[i].y}");
-            }
-
-            Console.WriteLine();
-
-            Console.ResetColor();
-        }
-
-        static void Inspect(string header, Dots.Dot[] vec, ConsoleColor color)
-        {
-            Console.WriteLine($"{header}:\r\n");
-
-            for (var i = 0; i < vec.Length; i++)
-            {
+            for (var i = 0; i < vec.Length; i++) {
                 Console.ForegroundColor = color;
-                Console.Write($"{vec[i].y}");
+                Console.Write($"{vec[i].f}");
                 Console.ResetColor();
-                // Console.WriteLine($" = {vec[i].inspect()}");
                 Console.WriteLine();
             }
 
             Console.WriteLine();
         }
 
-        static Dots.Dot[] Vector()
-        {
-            Dots.Dot[] vec = new Dots.Dot[7 + Dots.Dot.random(11)];
+        static Dots.Dot[] Vector(int size) {
+            Dots.Dot[] vec = new Dots.Dot[size];
 
-            for (var i = 0; i < vec.Length; i++)
-            {
-                var scalar = Dots.Dot.random(1000) / (1000 * 1.0);
-                
-                vec[i] = new Dots.Dot()
-                {
-                    y = scalar
-                };
+            for (var i = 0; i < vec.Length; i++) {
+                vec[i] = Dots.Dot.random(1000) / (1000 * 1.0);
             }
 
             return vec;
-        }         
+        }
 
-        static void Test(Dots.Dot[] Y, Dots.Dot[][] H)
-        {
+        static void Test(Dots.Dot[] Y, Dots.Dot[][] H, int size) {
             Console.WriteLine("\r\n**************************\r\n");
 
             Dots.Dot[] X;
 
-            X = Vector();
-
-            Print("X", X);
+            X = Vector(size); 
 
             Dots.compute(Y, H, X);
-            
+
             Console.WriteLine("\r\n=========================\r\n");
 
-            for (int l = 0; l < H.Length; l++)
-            {
-              //   Inspect($"H{l}", H[l], ConsoleColor.DarkGray);
+            if (H != null) {
+                for (int l = 0; l < H.Length; l++) {
+                    Inspect($"H{l}", H[l], ConsoleColor.DarkGray);
+                }
             }
 
-            if (Y != null)
-            {
+            if (Y != null) {
                 Inspect("Y", Y, ConsoleColor.Green);
             }
+
+            Inspect("X", X, ConsoleColor.White);
 
             Console.WriteLine("\r\nE:\r\n");
 
@@ -83,95 +55,104 @@ namespace Recipes
 
         }
 
-        static void Train(Func<double> α, ref Dots.Dot[] Y, 
+        static void Train(Func<double> α, Func<double> μ, Dots.Dot[] Y,
             Dots.Dot[][] H, Func<Dots.Dot[]> X, Func<Dots.Dot[], Dots.Dot[]> T, int max, int episodes,
-            Func<int, Dots.Dot[], double, int> epoch)
-        {            
-            for (int episode = 0; episode < episodes; episode++)
-            {
-                var x = X();
+            Func<int, Dots.Dot[], double, int> epoch) {
+            Parallel.For(0, episodes, new ParallelOptions() { MaxDegreeOfParallelism = 1 }, (episode, state) => {
 
-                if (max < 0)
-                {
-                    Dots.grow(ref Y, x.Length);
-                }
-                else
-                {
-                    Dots.grow(ref Y, Math.Min(max, x.Length));
-                }
-
-                Dots.connect(Y, H, x);
+                var x = X();                 
 
                 Dots.compute(Y, H, x);
 
                 var t = T(x);
 
-                double E = Dots.sgd(Y, H, t, α());
+                Dots.sgd(Y, H, t, α(), μ());
 
-                if (E <= double.Epsilon || double.IsNaN(E) || double.IsInfinity(E))
-                {
-                    break;
+                var E = Dots.error(Y, t);
+
+                if (E <= double.Epsilon || double.IsNaN(E) || double.IsInfinity(E)) {
+                    state.Stop();
                 }
 
-                if (epoch != null)
-                {
+                if (epoch != null) {
                     episode = epoch(episode, x, E);
                 }
-            }
+
+                if (episode == int.MaxValue) {
+                    state.Stop();
+                }
+
+            });
 
         }
-    
-        static void Main(string[] args)
-        {
-            bool canceled = false; int MAX = 32;
 
-            Dots.Dot[][] H = new Dots.Dot[][]
-            {
-            };
+        static void Main(string[] args) {
+            bool canceled = false;
 
-            Dots.Dot[] Y = null;
-
-            Console.CancelKeyPress += (sender, e) =>
-            {
+            Console.CancelKeyPress += (sender, e) => {
                 e.Cancel = canceled = true;
             };
 
-            Test(Y, H);
+            int SIZE = 7;
+
+            Dots.Dot[][] H = new Dots.Dot[][]
+            {
+                 Dots.create(SIZE, Dots.Sigmoid.Default),
+                 Dots.create(SIZE, Dots.Sigmoid.Default),
+                 Dots.create(SIZE, Dots.Sigmoid.Default),
+            };
+
+            Dots.Dot[] Y = Dots.create(SIZE, Dots.Identity.Default);
+
+            Dots.connect(Y, H, SIZE);
+
+            Test(Y, H, SIZE);
 
             double E = 0.0; double S = 0.0; double A = 0.0; double D = 0.0; double R = 0.0;
 
             Train(
-                
+
                 // Learning rate
 
-                () => 0.0001,
+                () => 1 / Math.PI,
+
+                // Momentum
+
+                () => 1 / Math.E,
 
                 // Output vector
 
-                ref Y,
+                Y,
 
                 // Hidden layers
 
                 H,
-                
-                // Random input vector
 
-                ()=> 
-                {
-                    return Vector();
+                // Input vector
+
+                () => {
+                    return Vector(SIZE);
                 },
 
-                (X) =>
-                {
-                    return X;
+                // Target vector
+
+                (X) => {
+                    Dots.Dot[] Yreverse = new Dots.Dot[X.Length];
+
+                    for (int i = 0; i < Yreverse.Length; i++) {
+                        // Yreverse[Yreverse.Length - 1 - i] = X[i];
+                        Yreverse[i] = X[i];
+                    }
+
+                    return Yreverse;
                 },
 
-                MAX,
+                SIZE,
 
-                32 * 32 * 1024,
+                32 * 64 * 128 * 256,
 
-                (episode, X, error)=>
-                {
+                (episode, X, error) => {
+
                     E += error * error * (episode + 1);
 
                     S += E * E * (episode + 1);
@@ -181,19 +162,15 @@ namespace Recipes
                     D += A * A * (episode + 1);
 
                     R += D * D * (episode + 1);
-
-                    if (double.IsNaN(D) || double.IsInfinity(D))
-                    {
-                        return int.MaxValue - 1;
-                    }
-
+                     
                     // Error Wheel, Gears
 
-                    Console.WriteLine($"{1 / R} | {1 / D} | {1 / A} | {1 / S} | {1 / E}");
+                    if (episode % 37 == 0) {
+                        Console.WriteLine($"{1 / R} | {1 / D} | {1 / A} | {1 / S} | {1 / E}");
+                    }
 
-                    if (canceled)
-                    {
-                        episode = int.MaxValue - 1;
+                    if (canceled) {
+                        episode = int.MaxValue;
                     }
 
                     return episode;
@@ -201,7 +178,7 @@ namespace Recipes
 
             );
 
-            Test(Y, H);
+            Test(Y, H, SIZE);
 
             Console.ReadKey();
         }

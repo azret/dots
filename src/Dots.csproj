@@ -31,7 +31,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>Recipes.Iris</StartupObject>
+    <StartupObject>Recipes.Identity</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -46,12 +46,6 @@
   <ItemGroup>
     <Compile Include="..\recipes\f%28x%29 = x.cs">
       <Link>recipes\f%28x%29 = x.cs</Link>
-    </Compile>
-    <Compile Include="..\recipes\f%28x0, x1%29 = x0 xor x1.cs">
-      <Link>recipes\f%28x0, x1%29 = x0 xor x1.cs</Link>
-    </Compile>
-    <Compile Include="..\recipes\iris.cs">
-      <Link>recipes\iris.cs</Link>
     </Compile>
     <Compile Include="Dots.cs" />
   </ItemGroup>
