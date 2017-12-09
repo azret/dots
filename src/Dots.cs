@@ -1,83 +1,113 @@
-﻿using System;
-
-public static class Dots {
+﻿namespace System {
     public interface IFunction {
-        double f(double value);
-        double df(double value);
+        double f(double x);
+        double df(double x, double y);
     }
-     
+
     public class Tanh : IFunction {
-        public static readonly IFunction Default = New();
+        public static readonly IFunction Ω = New();
 
         public static IFunction New() {
             return new Tanh();
         }
 
-        public static double f(double value) {
-            return Math.Tanh(value);
+        static double tanh(double exp) {
+            return (exp - 1) / (exp + 1);
         }
 
-        public static double df(double value) {
-            return (1 - value * value);
+        public static double f(double x) {
+            return tanh(Math.Exp(2 * x));
         }
 
-        double IFunction.f(double value) {
-            return f(value);
+        public static double df(double x, double y) {
+            return (1 - y * y);
         }
 
-        double IFunction.df(double value) {
-            return df(value);
+        double IFunction.f(double x) {
+            return f(x);
+        }
+
+        double IFunction.df(double x, double y) {
+            return df(x, y);
         }
     }
-     
+
     public class Sigmoid : IFunction {
-        public static readonly IFunction Default = New();
+        public static readonly IFunction Ω = New();
 
         public static IFunction New() {
             return new Sigmoid();
         }
 
-        public static double f(double value) {
-            return 1 / (1 + Math.Exp(-value));
+        static double sigmoid(double exp) {
+            return 1 / (1 + exp);
         }
 
-        public static double df(double value) {
-            return value * (1 - value);
+        public static double f(double x) {
+            return sigmoid(Math.Exp(-x));
         }
 
-        double IFunction.f(double value) {
-            return f(value);
+        public static double df(double x, double y) {
+            return y * (1 - y);
         }
 
-        double IFunction.df(double value) {
-            return df(value);
+        double IFunction.f(double x) {
+            return f(x);
+        }
+
+        double IFunction.df(double x, double y) {
+            return df(x, y);
         }
     }
-     
+
+    public class Softplus : IFunction {
+        public static readonly IFunction Ω = New();
+
+        public static IFunction New() {
+            return new Softplus();
+        }
+
+        public static double f(double x) {
+            return Math.Log(1 + Math.Exp(x));
+        }
+
+        public static double df(double x, double y) {
+            return 1 / (1 + Math.Exp(-x));
+        }
+
+        double IFunction.f(double x) {
+            return f(x);
+        }
+
+        double IFunction.df(double x, double y) {
+            return df(x, y);
+        }
+    }
+
     public class Identity : IFunction {
-        public static readonly IFunction Default = New();
+        public static readonly IFunction Ω = New();
 
         public static IFunction New() {
             return new Identity();
         }
 
-        public static double f(double value) {
-            return value;
+        public static double f(double x) {
+            return x;
         }
 
-        public static double df(double value) {
-            return 1.0;
+        public static double df(double x, double y) {
+            return 1;
         }
 
-        double IFunction.f(double value) {
-            return f(value);
+        double IFunction.f(double x) {
+            return f(x);
         }
 
-        double IFunction.df(double value) {
-            return df(value);
+        double IFunction.df(double x, double y) {
+            return df(x, y);
         }
     }
-     
+
     public class Dot {
         public static readonly Random randomizer = new Random();
 
@@ -91,53 +121,47 @@ public static class Dots {
 
         public void randomize() {
             for (int j = 0; β != null && j < β.Length; j++) {
-                β[j].ω = random();
+                β[j].β = random();
             }
 
-            intercept = random();
+            ζ = random();
         }
-
-        IFunction _F;
-
-        public IFunction F {
-            get {
-                return _F;
-            }
-        }
-
-        public Dot(IFunction F = null) {
-            _F = F;
-        }
-
-        public double intercept;
 
         public struct Coefficient {
-            public double ψ;
             public double ξ;
-            public double ω;
+            public double β;
+            public double θ;
         }
 
         public Coefficient[] β;
 
+        public double ζ;
+
+        public IFunction Ω;
+
+        public double ƒ;
+
+        public double δƒ;
+
         public double δ;
 
-        public double f;
+        public static implicit operator Dot(double value) {
+            return new Dot() { ƒ = value };
+        }
 
-        public double df;
-
-        public static implicit operator Dot(double y) {
-            return new Dot() { f = y };
+        public static implicit operator double(Dot value) {
+            return value.ƒ;
         }
 
         public override string ToString() {
-            return f.ToString();
+            return ƒ.ToString();
         }
-         
+
         public void connect(int X) {
             int j;
 
-            if (β == null || β.Length < X) {
-                var tmp = new Coefficient[X];
+            if (β == null || β.Length != X) {
+                Coefficient[] tmp = new Coefficient[X];
 
                 j = 0;
 
@@ -146,77 +170,58 @@ public static class Dots {
                 }
 
                 for (; j < tmp.Length; j++) {
-                    tmp[j].ω = random();
+                    tmp[j].β = random();
                 }
 
                 β = tmp;
             }
-        }         
+        }
 
-        public void compute(params Dot[] X) {
+        public void compute(Dot[] X) {
             System.Diagnostics.Debug.Assert(X.Length == β.Length);
 
-            int len = β.Length;             
+            double y = ζ * 1.0;
 
-            var y = 0.0; int j;
+            for (int j = 0; j < β.Length; j++) {
+                double ξ = X[j].ƒ;
 
-            j = 0;
+                β[j].ξ = ξ;
 
-            while (j < len) {
-                double x;
-
-                x = X[j].f;
-
-                β[j].ξ = x;
-
-                y += β[j].ω * x;
-
-                j++;
+                y += β[j].β * ξ;
             }
 
-            y += intercept * 1.0;
-
-            if (_F == null) {
-                f = y; df = 1.0;
+            if (Ω == null) {
+                ƒ = y; δƒ = 1.0;
             } else {
-                f = _F.f(y); df = _F.df(f);
+                ƒ = Ω.f(y); δƒ = Ω.df(y, ƒ);
             }
         }
 
         public void move(double μ) {
-            int len = β.Length;
+            ζ += δ * 1.0;
 
-            int j;
+            for (int j = 0; j < β.Length; j++) {
+                double ϟ = δ * β[j].ξ;
 
-            j = 0;
+                β[j].β += ϟ + μ * β[j].θ;
 
-            while (j < len) {
-                var change = δ * β[j].ξ;
+                β[j].θ = ϟ;
+            }
+        }
+    }
 
-                β[j].ω += change + μ * β[j].ψ;
+    public static class Dots {
+        public static Dot[] create(int size, IFunction F = null) {
+            Dot[] L = new Dot[size];
 
-                β[j].ψ = change;
-
-                j++;
+            for (int i = 0; i < L.Length; i++) {
+                L[i] = new Dot() { Ω = F };
             }
 
-            intercept += δ * 1.0;
+            return L;
         }
 
-    }
-      
-    public static Dot[] create(int size, IFunction F = null) {
-        var L = new Dots.Dot[size];
-
-        for (int i = 0; i < L.Length; i++) {
-            L[i] = new Dot(F);
-        }
-        
-        return L;
-    }
-     
-    public static void connect(Dot[] Y, Dot[][] H, int X) {
-        if (H != null) {
+        public static void connect(int X, Dot[][] H, Dot[] Y) {
             for (int l = 0; H != null && l < H.Length; l++) {
                 Dot[] h = H[l];
 
@@ -226,15 +231,13 @@ public static class Dots {
 
                 X = h.Length;
             }
+
+            for (int i = 0; Y != null && i < Y.Length; i++) {
+                Y[i].connect(X);
+            }
         }
 
-        for (int i = 0; Y != null && i < Y.Length; i++) {
-            Y[i].connect(X);
-        }
-    }
-
-    public static void compute(Dot[] Y, Dot[][] H, params Dot[] X) {
-        if (H != null) {
+        public static void compute(Dot[] X, Dot[][] H, Dot[] Y) {
             for (int l = 0; H != null && l < H.Length; l++) {
                 Dot[] h = H[l];
 
@@ -244,72 +247,74 @@ public static class Dots {
 
                 X = h;
             }
+
+            for (int i = 0; Y != null && i < Y.Length; i++) {
+                Y[i].compute(X);
+            }
         }
 
-        for (int i = 0; Y != null && i < Y.Length; i++) {
-            Y[i].compute(X);
-        }
-    }
+        public static double error(Dot[] Y, Dot[] T) {
+            System.Diagnostics.Debug.Assert(Y.Length == T.Length);
 
-    public static double error(Dot[] Y, Dot[] T) {
-        System.Diagnostics.Debug.Assert(Y.Length == T.Length);
+            double Ε = 0.0;
 
-        double Δ = 0.0; int len = Y.Length;
+            for (int i = 0; i < Y.Length; i++) {
+                double ϟ = Y[i].ƒ - T[i].ƒ;
 
-        for (int i = 0; i < len; i++) {
-            Δ += Math.Pow(Y[i].f - T[i].f, 2);
-        }
+                Ε += ϟ * ϟ;
+            }
 
-        return Δ * 0.5;
-    }
-
-    public static void sgd(Dot[] Y, Dot[][] H, Dot[] T, double learningRate, double momentum) {
-        System.Diagnostics.Debug.Assert(Y.Length == T.Length);
-
-        int len = Y.Length;
-
-        for (int i = 0; i < len; i++) {
-            var y = Y[i]; var t = T[i];
-
-            y.δ = -(y.f - t.f) * y.df * learningRate;
+            return Ε * 0.5;
         }
 
-        Dot[] L;
+        public static double sgd(Dot[][] H, Dot[] Y, Dot[] T, double learningRate, double momentum) {
+            System.Diagnostics.Debug.Assert(Y.Length == T.Length);
 
-        L = Y;
+            double Ε = 0.0;
 
-        if (H != null) {
+            for (int i = 0; i < Y.Length; i++) {
+                double ϟ = Y[i].ƒ - T[i].ƒ;
 
-            for (int l = H.Length - 1; l >= 0; l--) {
-                Dot[] P = L; L = H[l];
+                Ε += ϟ * ϟ;
 
-                for (int i = 0; i < L.Length; i++) {
-                    var δ = 0.0; len = P.Length;
+                Y[i].δ = - ϟ * Y[i].δƒ * learningRate;
+            }
 
-                    for (int j = 0; j < len; j++) {
-                        δ += P[j].δ * P[j].β[i].ω;
+            Ε *= 0.5;
+
+            Dot[] h = Y;
+
+            if (H != null) {
+                for (int l = H.Length - 1; l >= 0; l--) {
+                    Dot[] P = h; h = H[l];
+
+                    for (int i = 0; i < h.Length; i++) {
+                        double Δ = 0.0;
+
+                        for (int j = 0; j < P.Length; j++) {
+                            Δ += P[j].δ * P[j].β[i].β;
+                        }
+
+                        h[i].δ = Δ * h[i].δƒ * learningRate;
                     }
-
-                    var o = L[i];
-
-                    o.δ = δ * o.df * learningRate;
                 }
             }
-        }
 
-        for (int i = 0; i < Y.Length; i++) {
-            Y[i].move(momentum);
-        }
+            for (int i = 0; Y != null && i < Y.Length; i++) {
+                Y[i].move(momentum);
+            }
 
-        if (H != null) {
-            for (int l = H.Length - 1; l >= 0; l--) {
-                L = H[l];
+            if (H != null) {
+                for (int l = H.Length - 1; l >= 0; l--) {
+                    h = H[l];
 
-                for (int i = 0; i < L.Length; i++) {
-                    L[i].move(momentum);
+                    for (int i = 0; i < h.Length; i++) {
+                        h[i].move(momentum);
+                    }
                 }
             }
-        }
 
+            return Ε;
+        }
     }
 }
