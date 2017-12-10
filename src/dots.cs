@@ -1,14 +1,44 @@
 ﻿namespace System.Dots {
-    public interface IFunction {
+
+    /// <summary>
+    /// A Dot(·) is a high level linear unit that produces a single scalar value ƒ
+    /// </summary>
+    public partial class Dot {
+        public double ƒ;
+
+        public static implicit operator Dot(double value) {
+            return new Dot() { ƒ = value };
+        }
+
+        public static implicit operator double(Dot value) {
+            return value.ƒ;
+        }
+
+        public override string ToString() {
+            return ƒ.ToString();
+        }
+    }
+
+    /// <summary>
+    /// IΩ
+    /// </summary>
+    public interface IΩ {
         double f(double x);
         double df(double x, double y);
     }
 
-    public class Tanh : IFunction {
-        public static readonly IFunction Ω = New();
+    /// <summary>
+    /// Tanh (ƒ(x) = (e²ˣ - 1) / (e²ˣ + 1))
+    /// </summary>
+    public class Tanh : IΩ {
+        public static readonly IΩ Ω = New();
 
-        public static IFunction New() {
+        public static IΩ New() {
             return new Tanh();
+        }
+
+        public override string ToString() {
+            return "ƒ(x) = (e²ˣ - 1) / (e²ˣ + 1)";
         }
 
         static double tanh(double exp) {
@@ -23,20 +53,27 @@
             return (1 - y * y);
         }
 
-        double IFunction.f(double x) {
+        double IΩ.f(double x) {
             return f(x);
         }
 
-        double IFunction.df(double x, double y) {
+        double IΩ.df(double x, double y) {
             return df(x, y);
         }
     }
 
-    public class Sigmoid : IFunction {
-        public static readonly IFunction Ω = New();
+    /// <summary>
+    /// Sigmoid (ƒ(x) = 1 / (1 + e⁻ˣ))
+    /// </summary>
+    public class Sigmoid : IΩ {
+        public static readonly IΩ Ω = New();
 
-        public static IFunction New() {
+        public static IΩ New() {
             return new Sigmoid();
+        }
+
+        public override string ToString() {
+            return "ƒ(x) = 1 / (1 + e⁻ˣ)";
         }
 
         static double sigmoid(double exp) {
@@ -51,20 +88,27 @@
             return y * (1 - y);
         }
 
-        double IFunction.f(double x) {
+        double IΩ.f(double x) {
             return f(x);
         }
 
-        double IFunction.df(double x, double y) {
+        double IΩ.df(double x, double y) {
             return df(x, y);
         }
     }
 
-    public class Softplus : IFunction {
-        public static readonly IFunction Ω = New();
+    /// <summary>
+    /// Softplus (ƒ(x) = log(1 + eˣ))
+    /// </summary>
+    public class Softplus : IΩ {
+        public static readonly IΩ Ω = New();
 
-        public static IFunction New() {
+        public static IΩ New() {
             return new Softplus();
+        }
+
+        public override string ToString() {
+            return "ƒ(x) = log(1 + eˣ)";
         }
 
         public static double f(double x) {
@@ -75,20 +119,58 @@
             return 1 / (1 + Math.Exp(-x));
         }
 
-        double IFunction.f(double x) {
+        double IΩ.f(double x) {
             return f(x);
         }
 
-        double IFunction.df(double x, double y) {
+        double IΩ.df(double x, double y) {
             return df(x, y);
         }
     }
 
-    public class Identity : IFunction {
-        public static readonly IFunction Ω = New();
+    /// <summary>
+    /// ReLU (ƒ(x) = max(0, x))
+    /// </summary>
+    public class ReLU : IΩ {
+        public static readonly IΩ Ω = New();
 
-        public static IFunction New() {
+        public static IΩ New() {
+            return new ReLU();
+        }
+
+        public override string ToString() {
+            return "ƒ(x) = max(0, x)";
+        }
+
+        public static double f(double x) {
+            return Math.Max(0, x);
+        }
+
+        public static double df(double x, double y) {
+            return Math.Max(0, Math.Sign(x));
+        }
+
+        double IΩ.f(double x) {
+            return f(x);
+        }
+
+        double IΩ.df(double x, double y) {
+            return df(x, y);
+        }
+    }
+
+    /// <summary>
+    /// Identity (ƒ(x) = x)
+    /// </summary>
+    public class Identity : IΩ {
+        public static readonly IΩ Ω = New();
+
+        public static IΩ New() {
             return new Identity();
+        }
+
+        public override string ToString() {
+            return "ƒ(x) = x";
         }
 
         public static double f(double x) {
@@ -99,16 +181,19 @@
             return 1;
         }
 
-        double IFunction.f(double x) {
+        double IΩ.f(double x) {
             return f(x);
         }
 
-        double IFunction.df(double x, double y) {
+        double IΩ.df(double x, double y) {
             return df(x, y);
         }
     }
 
-    public class Dot {
+    /// <summary>
+    /// y = ƒ(χ) = Ω(βᵀχ + ζ)
+    /// </summary>
+    public partial class Dot {
         public static readonly Random randomizer = new Random(137);
 
         public static double random() {
@@ -119,86 +204,78 @@
             return randomizer.Next(max);
         }
 
-        public void randomize() {
-            for (int j = 0; β != null && j < β.Length; j++) {
-                β[j].β = random();
-            }
-
-            ζ.β = random();
-        }
-
-        public double δ;
-
-        public IFunction Ω;
-
-        public double ƒ;
-
         public double δƒ;
 
         public struct Coefficient {
             public double ξ;
             public double β;
             public double θ;
-        }
 
-        public Coefficient[] β;
+            public override string ToString() {
+                return θ.ToString();
+            }
+        }
 
         public Coefficient ζ;
 
-        public static implicit operator Dot(double value) {
-            return new Dot() { ƒ = value };
+        public Coefficient[] β;
+
+        public int size() {
+            if (β != null) {
+                return β.Length;
+            }
+            return 0;
         }
 
-        public static implicit operator double(Dot value) {
-            return value.ƒ;
-        }
-
-        public override string ToString() {
-            return ƒ.ToString();
-        }
-
-        public void connect(int X) {
-            int j;
-
+        public void size(int X) {
             if (β == null || β.Length != X) {
                 Coefficient[] tmp = new Coefficient[X];
 
-                j = 0;
-
-                for (; β != null && j < β.Length; j++) {
-                    tmp[j] = β[j];
-                }
-
-                for (; j < tmp.Length; j++) {
-                    tmp[j].β = random();
+                for (int j = 0; j < tmp.Length; j++) {
+                    if (β != null && j < β.Length) {
+                        tmp[j] = β[j];
+                    }
                 }
 
                 β = tmp;
             }
         }
 
-        /// <summary>
-        /// ƒ = βᵀχ + ζ
-        /// </summary>
+        public void randomize() {
+            for (int j = 0; β != null && j < β.Length; j++) {
+                β[j].β = random();
+            }
+            ζ.β = random();
+        }
+
+        public IΩ Ω;
+
         public unsafe void compute(Dot[] X) {
+            const double BIAS = 1.0;
+
             System.Diagnostics.Debug.Assert(X.Length == β.Length);
 
             double Σ = 0, ξ;
 
-            ζ.ξ = ξ = 1; Σ += ζ.β * ξ;
+            ζ.ξ = ξ = BIAS;
+            Σ += ζ.β * ξ;
 
             fixed (Coefficient* p = β) {
                 for (int j = 0; j < X.Length; j++) {
-                    p[j].ξ = ξ = X[j].ƒ; Σ += p[j].β * ξ;
+                    p[j].ξ = ξ = X[j].ƒ;
+                    Σ += p[j].β * ξ;
                 }
             }
 
             ƒ = Σ; δƒ = 1;
 
             if (Ω != null) {
-                ƒ = Ω.f(Σ); δƒ = Ω.df(Σ, ƒ);
+                ƒ = Ω.f(Σ);
+                δƒ = Ω.df(Σ, ƒ);
             }
         }
+
+        public double δ;
 
 #if SAFE
         [Runtime.CompilerServices.MethodImpl(Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
@@ -277,21 +354,40 @@
             }
 
             fixed (Coefficient* p = &ζ) {
-                double ϟ = Δ * p->ξ; p->β += ϟ + μ * p->θ; p->θ = ϟ;
+                double ϟ = Δ * p->ξ;
+                p->β += ϟ + μ * p->θ;
+                p->θ = ϟ;
             }
         }
 #endif
     }
 
+    /// <summary>
+    /// Dots
+    /// </summary>
     public static class Dots {
-        public static Dot[] create(int size, IFunction F = null) {
-            Dot[] L = new Dot[size];
+        public static Dot[] create(int count, IΩ F = null) {
+            Dot[] h = new Dot[count];
 
-            for (int i = 0; i < L.Length; i++) {
-                L[i] = new Dot() { Ω = F };
+            for (int i = 0; i < h.Length; i++) {
+                h[i] = new Dot() { Ω = F };
             }
 
-            return L;
+            return h;
+        }
+
+        public static void randomize(Dot[][] H, params Dot[] Y) {
+            for (int l = 0; H != null && l < H.Length; l++) {
+                Dot[] h = H[l];
+
+                for (int i = 0; i < h.Length; i++) {
+                    h[i].randomize();
+                }
+            }
+
+            for (int i = 0; Y != null && i < Y.Length; i++) {
+                Y[i].randomize();
+            }
         }
 
         public static void connect(int X, Dot[][] H, Dot[] Y) {
@@ -299,14 +395,14 @@
                 Dot[] h = H[l];
 
                 for (int i = 0; i < h.Length; i++) {
-                    h[i].connect(X);
+                    h[i].size(X);
                 }
 
                 X = h.Length;
             }
 
             for (int i = 0; Y != null && i < Y.Length; i++) {
-                Y[i].connect(X);
+                Y[i].size(X);
             }
         }
 
@@ -348,29 +444,30 @@
             for (int i = 0; i < Y.Length; i++) {
                 Dot y = Y[i]; Dot t = T[i];
 
-                double ϟ;
+                double ϟ = y.ƒ - t.ƒ;
 
-                ϟ = y.ƒ - t.ƒ; y.δ = -ϟ * y.δƒ;
-
+                y.δ = -ϟ * y.δƒ;
                 Ε += ϟ * ϟ;
             }
 
             Ε *= 0.5;
 
-            Dot[] h = Y;
-
             if (H != null) {
+                Dot[] h = Y; Dot u; Dot c;
+
                 for (int l = H.Length - 1; l >= 0; l--) {
-                    Dot[] U = h; h = H[l]; Dot u; double Δ;
+                    Dot[] U = h; h = H[l];
 
                     for (int i = 0; i < h.Length; i++) {
-                        Δ = 0.0;
+                        double Δ = 0.0;
 
                         for (int j = 0; j < U.Length; j++) {
-                            u = U[j]; Δ += u.δ * u.β[i].β;
+                            u = U[j];
+                            Δ += u.δ * u.β[i].β;
                         }
 
-                        u = h[i]; u.δ = Δ * u.δƒ;
+                        c = h[i];
+                        c.δ = Δ * c.δƒ;
                     }
                 }
             }
@@ -381,7 +478,7 @@
 
             if (H != null) {
                 for (int l = H.Length - 1; l >= 0; l--) {
-                    h = H[l];
+                    Dot[] h = H[l];
 
                     for (int i = 0; i < h.Length; i++) {
                         h[i].move(learningRate, momentum);

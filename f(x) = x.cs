@@ -37,7 +37,7 @@ public static class App {
     static Dot[] Vector(int size) {
         Dot[] A = new Dot[size];
         for (var i = 0; i < A.Length; i++) {
-            A[i] = Dot.random(1000) / (1000 * 1.0);
+            A[i] = Dot.random() * (0.5 - Dot.random(1000) / (1000 * 1.0));
         }
         return A;
     }
@@ -85,16 +85,18 @@ public static class App {
     }
 
     static void Main(string[] args) {
-        int SIZE = 7;
+        int INPUTS = 7;
 
         Dot[][] H = new Dot[][]
         {
-            Dots.create(SIZE, Sigmoid.Ω),
+            Dots.create(INPUTS, Tanh.Ω),
         };
 
-        Dot[] Y = Dots.create(SIZE, Identity.Ω);
+        Dot[] Y = Dots.create(INPUTS, Identity.Ω);
 
-        Dots.connect(SIZE, H, Y);
+        Dots.connect(INPUTS, H, Y);
+
+        Dots.randomize(H, Y);
 
         bool canceled = false;
 
@@ -107,7 +109,7 @@ public static class App {
             e.Cancel = canceled = true;
         };
 
-        Test(Vector(SIZE), H, Y, verbose: false);
+        Test(Vector(INPUTS), H, Y, verbose: false);
 
         double E0 = 0.0; double E1 = 0.0; double E2 = 0.0; double E3 = 0.0; double E4 = 0.0;
 
@@ -136,7 +138,7 @@ public static class App {
             // Input vector
 
             () => {
-                return Vector(SIZE);
+                return Vector(INPUTS);
             },
 
             // Target vector
@@ -178,7 +180,7 @@ public static class App {
 
         );
 
-        Test(Vector(SIZE), H, Y, verbose: false);
+        Test(Vector(INPUTS), H, Y, verbose: false);
 
         Console.ReadKey();
     }
