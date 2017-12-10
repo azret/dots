@@ -4,7 +4,7 @@
     /// A Dot(·) is a high level linear unit that produces a single scalar value ƒ
     /// </summary>
     public partial class Dot {
-        public double ƒ;
+        public double ƒ, δƒ;
 
         public static implicit operator Dot(double value) {
             return new Dot() { ƒ = value };
@@ -204,8 +204,6 @@
             return randomizer.Next(max);
         }
 
-        public double δƒ;
-
         public struct Coefficient {
             public double ξ;
             public double β;
@@ -366,7 +364,37 @@
     /// <summary>
     /// Dots
     /// </summary>
-    public static class Dots {
+    public static partial class Dots {
+        public static void print(Dot[] Y, IO.TextWriter writer, string separator = ", ") {
+            for (int i = 0; Y != null && i < Y.Length; i++) {
+                if (i > 0) {
+                    writer.Write(separator);
+                }
+
+                writer.Write(Y[i].ToString());
+            }
+        }
+
+        public static Dot[] random(int count, double median = 1.0, double scale = 1.0) {
+            Dot[] h = new Dot[count];
+
+            for (var i = 0; i < h.Length; i++) {
+                h[i] = scale * Dot.random() * (median - Dot.random(1000) / (1000 * 1.0));
+            }
+
+            return h;
+        }
+
+        public static Dot[] create(double[] args) {
+            Dot[] h = new Dot[args.Length];
+
+            for (var i = 0; i < h.Length; i++) {
+                h[i] = args[i];
+            }
+
+            return h;
+        }
+
         public static Dot[] create(int count, IΩ F = null) {
             Dot[] h = new Dot[count];
 
@@ -377,7 +405,7 @@
             return h;
         }
 
-        public static void randomize(Dot[][] H, params Dot[] Y) {
+        public static void randomize(Dot[][] H, Dot[] Y) {
             for (int l = 0; H != null && l < H.Length; l++) {
                 Dot[] h = H[l];
 
@@ -422,7 +450,12 @@
                 Y[i].compute(X);
             }
         }
+    }
 
+    /// <summary>
+    /// Dots
+    /// </summary>
+    public static partial class Dots {
         public static double error(Dot[] Y, Dot[] T) {
             System.Diagnostics.Debug.Assert(Y.Length == T.Length);
 
@@ -437,6 +470,7 @@
             return Ε * 0.5;
         }
 
+        public static double sgd(Dot[] Y, Dot[] T, double learningRate = 0.1, double momentum = 0.0) { return sgd(null, Y, T, learningRate, momentum); }
         public static double sgd(Dot[][] H, Dot[] Y, Dot[] T, double learningRate, double momentum) {
             System.Diagnostics.Debug.Assert(Y.Length == T.Length);
 

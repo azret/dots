@@ -34,14 +34,6 @@ public static class App {
         Console.WriteLine();
     }
 
-    static Dot[] Vector(int size) {
-        Dot[] A = new Dot[size];
-        for (var i = 0; i < A.Length; i++) {
-            A[i] = Dot.random() * (0.5 - Dot.random(1000) / (1000 * 1.0));
-        }
-        return A;
-    }
-
     static void Test(Dot[] X, Dot[][] H, Dot[] Y, bool verbose) {
         Dots.compute(X, H, Y);
 
@@ -109,7 +101,7 @@ public static class App {
             e.Cancel = canceled = true;
         };
 
-        Test(Vector(INPUTS), H, Y, verbose: false);
+        Test(Dots.random(INPUTS), H, Y, verbose: false);
 
         double E0 = 0.0; double E1 = 0.0; double E2 = 0.0; double E3 = 0.0; double E4 = 0.0;
 
@@ -138,7 +130,7 @@ public static class App {
             // Input vector
 
             () => {
-                return Vector(INPUTS);
+                return Dots.random(INPUTS, 0.5);
             },
 
             // Target vector
@@ -180,7 +172,7 @@ public static class App {
 
         );
 
-        Test(Vector(INPUTS), H, Y, verbose: false);
+        Test(Dots.random(INPUTS), H, Y, verbose: false);
 
         Console.ReadKey();
     }
