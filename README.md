@@ -58,11 +58,11 @@ The following example learns a multi-dimensional identity function
 ȳ = **f**(x̄) = x̄
 
 ```csharp
-Dot[] Ȳ = null;
+var Y = Dots.create(7);
 
 for (int episode = 0; episode < 128 * 1024; episode++)
 {
-    var X̄ = new Dot[] 
+    var T = new Dot[]
     {
         random(),
         random(),
@@ -73,105 +73,8 @@ for (int episode = 0; episode < 128 * 1024; episode++)
         random()
     };
     
-    Dots.sgd(X̄, ref Ȳ, null, learn : X̄, rate: 0.1);    
+    Dots.sgd(Y, T, rate: 0.1);
 }
 
-Dots.compute(X̄, null, Ȳ);
+Dots.compute(new Dot[] { 0, 1, 2, 3, 4, 5, 6 }, Y);
 ```
-See [f(x) = x.cs](/src/recipes/f(x)%20%3D%20x.cs) for a full example.
-
-
-## Xor Function (Multi-layer Feed Forward Network)
-
-Training examples
-
-```csharp 
-static Dots.Dot[][] X̄ = new Dots.Dot[][] 
-{
-    new Dots.Dot[] { -1, -1 },
-    new Dots.Dot[] { -1, +1 },
-    new Dots.Dot[] { +1, -1 },
-    new Dots.Dot[] { +1, +1 },
-};
-```
-
-Target values
-
-```csharp 
-static Dots.Dot[][] Ŷ = new Dots.Dot[][]
-{
-    new Dots.Dot[] { -1 },
-    new Dots.Dot[] { +1 },
-    new Dots.Dot[] { +1 },
-    new Dots.Dot[] { -1 },
-};         
-```
-
-[-1, 1]
-
-```csharp 
-var tanh = Dots.tanh().F;
-```
-
-[0, 1]
-
-```csharp 
-var sigmoid = Dots.sigmoid().F;
-```
-
-One hidden layer with two units
-
-```csharp 
-var H = new Dots.Dot[][]
-{
-    Dots.create(2, tanh) 
-};
-```
-
-One output layer
-
-```csharp 
-Dots.Dot[] Ȳ = null;
-```
-
-*Note* that the **Ȳ** vector is passed by **ref** and will be sized to the longest vector in the training set **Ŷ**.
-
-Likewise, the input connecions (dimensions) will grow as needed to support the longest X̄ vector seen during training.
-
-This allows for variable length feature vectors.
-
-```csharp
-for (int episode = 0; episode < 128 * 1024; episode++)
-{
-    /*  
-		Get a random training example
-	*/ 
-
-    var M = random(X̄.Length);
-
-    /*  
-		Gradient descent
-	*/ 
-
-    Dots.sgd(X̄[M], ref Ȳ, H, learn : Ŷ[M], rate: 0.1, tanh);
-}
-
-Dots.compute(X̄, H, Ȳ);
-```
-
-Result
-
-```csharp
-[-1, -1] = [-0.999999999999999]
-[-1, +1] = [+0.999999999999999]
-[+1, -1] = [+0.999999999999999]
-[+1, +1] = [-0.999999999999999]
-```
-
-## Resources
-
-[Machine Learning (Stanford)](https://www.youtube.com/watch?v=UzxYlbK2c7E&list=PLJ_CMbwA6bT-n1W0mgOlYwccZ-j6gBXqE)
-
-[MIT 6.034](https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-034-artificial-intelligence-fall-2010/lecture-videos)
-
-[Tensor Flow](https://www.tensorflow.org)
