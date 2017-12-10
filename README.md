@@ -69,6 +69,6 @@ for (int episode = 0; episode < 1024; episode++)
 
 Dots.compute(X: Dots.random(SIZE), Y);
 
--0.04, 0.00, -0.34, 0.17, 0.03, 0.01, 0.03
+0.04, 0.00, -0.34, 0.17, 0.03, -0.01, 0.03
 
 ```
