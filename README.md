@@ -58,12 +58,15 @@ The following example learns a multi-dimensional identity function
 ȳ = **f**(x̄) = x̄
 
 ```csharp
-var Y = Dots.create(7);
+const int SIZE = 7
 
-for (int episode = 0; episode < 128 * 1024; episode++)
+var Y = Dots.create(SIZE);
+
+for (int episode = 0; episode < 1024; episode++)
 {
-    Dots.sgd(Y, Dots.random(7));
+    Dots.sgd(Y, T: Dots.random(SIZE));
 }
 
-Dots.compute(new Dot[] { 0, 1, 2, 3, 4, 5, 6 }, Y);
+Dots.compute(X: Dots.random(SIZE), Y);
+
 ```
