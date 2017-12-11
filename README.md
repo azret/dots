@@ -48,7 +48,7 @@ ȳ = **f**(x̄) = βᵀx̄ + βc
 
 e.g. A one-dimensional identity function, or y = **f**(x) = x = 1.0·x + 0.0
 
-![y=f(x)=a·x](/Line.png?raw=true "y=f(x)=a·x+b")
+![y=f(x)=a·x](/f(x) = x.png?raw=true "y=f(x)=a·x+b")
 
 
 ## Identity Function (Linear Regression)

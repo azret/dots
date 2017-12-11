@@ -52,9 +52,9 @@
             return 0;
         }
 
-        public void size(int X) {
-            if (β == null || β.Length != X) {
-                Coefficient[] tmp = new Coefficient[X];
+        public void size(int ξ) {
+            if (β == null || β.Length != ξ) {
+                Coefficient[] tmp = new Coefficient[ξ];
 
                 for (int j = 0; j < tmp.Length; j++) {
                     if (β != null && j < β.Length) {
@@ -68,18 +68,18 @@
 
         public IΩ Ω;
 
-        public unsafe void compute(Dot[] X) {
+        public unsafe void compute(Dot[] ξ) {
             const double BIAS = 1;
 
-            System.Diagnostics.Debug.Assert(X.Length == β.Length);
+            System.Diagnostics.Debug.Assert(ξ.Length == β.Length);
 
             double y = 0, x;
 
             ζ.ξ = x = BIAS; y += ζ.β * x;
 
             fixed (Coefficient* c = β) {
-                for (int j = 0; j < X.Length; j++) {
-                    c[j].ξ = x = X[j].ƒ;
+                for (int j = 0; j < ξ.Length; j++) {
+                    c[j].ξ = x = ξ[j].ƒ;
                     y += c[j].β * x;
                 }
             }
@@ -213,11 +213,11 @@
     }
 
     public static partial class Dots {
-        public static void connect(this Dot[][] ℳ, int X, bool randomize = true) {
+        public static void connect(this Dot[][] ℳ, int ξ, bool randomize = true) {
             for (int ℓ = 0; ℳ != null && ℓ < ℳ.Length; ℓ++) {
                 Dot[] L = ℳ[ℓ];
                 for (int i = 0; i < L.Length; i++) {
-                    L[i].size(X);
+                    L[i].size(ξ);
                     if (randomize) {
                         for (int j = 0; j < L[i].β.Length; j++) {
                             L[i].β[j].β = random();
@@ -225,43 +225,31 @@
                         L[i].ζ.β = random();
                     }
                 }
-                X = L.Length;
+                ξ = L.Length;
             }
         }
 
         public static void randomize(this Dot[][] ℳ) {
             for (int ℓ = 0; ℳ != null && ℓ < ℳ.Length; ℓ++) {
-                Dot[] L = ℳ[ℓ];
-                for (int i = 0; i < L.Length; i++) {
-                    for (int j = 0; j < L[i].β.Length; j++) {
-                        L[i].β[j].β = random();
+                Dot[] ꝟ = ℳ[ℓ];
+                for (int i = 0; i < ꝟ.Length; i++) {
+                    for (int j = 0; j < ꝟ[i].β.Length; j++) {
+                        ꝟ[i].β[j].β = random();
                     }
-                    L[i].ζ.β = random();
+                    ꝟ[i].ζ.β = random();
                 }
             }
         }
 
-        public static Dot[] compute(this Dot[][] ℳ, Dot[] X) {
-            Dot[] Y = null;
-            for (int ℓ = 0; ℓ < ℳ.Length; ℓ++) {
-                Y = ℳ[ℓ];
-                for (int i = 0; i < Y.Length; i++) {
-                    Y[i].compute(X);
-                }
-                X = Y;
-            }
-            return Y;
-        }
-
-        public static double error(this Dot[][] ℳ, Dot[] T) {
-            Dot[] Y = null;
+        public static double error(this Dot[][] ℳ, Dot[] Ꝙ) {
+            Dot[] γ = null;
             for (int ℓ = ℳ.Length - 1; ℓ >= 0; ℓ--) {
-                if (Y == null) {
-                    Y = ℳ[ℓ];
-                    System.Diagnostics.Debug.Assert(Y.Length == T.Length);
+                if (γ == null) {
+                    γ = ℳ[ℓ];
+                    System.Diagnostics.Debug.Assert(γ.Length == Ꝙ.Length);
                     double Σ = 0.0;
-                    for (int i = 0; i < Y.Length; i++) {
-                        Σ += Math.Pow(Y[i].ƒ - T[i].ƒ, 2);
+                    for (int i = 0; i < γ.Length; i++) {
+                        Σ += Math.Pow(γ[i].ƒ - Ꝙ[i].ƒ, 2);
                     }
                     return Σ / 2;
                 }
@@ -269,31 +257,42 @@
             return double.NaN;
         }
 
-        public static void sgd(this Dot[][] ℳ, Dot[] T, double learningRate, double momentum) {
-            Dot[] Y = null;
+        public static Dot[] compute(this Dot[][] ℳ, Dot[] ξ) {
+            for (int ℓ = 0; ℓ < ℳ.Length; ℓ++) {
+                Dot[] ꝟ = ℳ[ℓ];
+                for (int i = 0; i < ꝟ.Length; i++) {
+                    ꝟ[i].compute(ξ);
+                }
+                ξ = ꝟ;
+            }
+            return ξ;
+        }
+
+        public static void sgd(this Dot[][] ℳ, Dot[] Ꝙ, double learningRate, double momentum) {
+            Dot[] γ = null;
             for (int ℓ = ℳ.Length - 1; ℓ >= 0; ℓ--) {
-                if (Y == null) {
-                    Y = ℳ[ℓ];
-                    System.Diagnostics.Debug.Assert(Y.Length == T.Length);
-                    for (int i = 0; i < Y.Length; i++) {
-                        Y[i].δ = -(Y[i].ƒ - T[i].ƒ);
+                if (γ == null) {
+                    γ = ℳ[ℓ];
+                    System.Diagnostics.Debug.Assert(γ.Length == Ꝙ.Length);
+                    for (int i = 0; i < γ.Length; i++) {
+                        γ[i].δ = -(γ[i].ƒ - Ꝙ[i].ƒ);
                     }
                 } else {
-                    Dot[] L = ℳ[ℓ];
-                    for (int i = 0; i < L.Length; i++) {
+                    Dot[] ꝟ = ℳ[ℓ];
+                    for (int i = 0; i < ꝟ.Length; i++) {
                         double Σ = 0.0;
-                        for (int j = 0; j < Y.Length; j++) {
-                            Σ += Y[j].δ * Y[j].β[i].β;
+                        for (int j = 0; j < γ.Length; j++) {
+                            Σ += γ[j].δ * γ[j].β[i].β;
                         }
-                        L[i].δ = Σ;
+                        ꝟ[i].δ = Σ;
                     }
-                    Y = L;
+                    γ = ꝟ;
                 }
             }
             for (int ℓ = ℳ.Length - 1; ℓ >= 0; ℓ--) {
-                Dot[] L = ℳ[ℓ];
-                for (int i = 0; i < L.Length; i++) {
-                    L[i].move(learningRate, momentum);
+                Dot[] ꝟ = ℳ[ℓ];
+                for (int i = 0; i < ꝟ.Length; i++) {
+                    ꝟ[i].move(learningRate, momentum);
                 }
             }
         }

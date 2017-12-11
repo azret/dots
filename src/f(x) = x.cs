@@ -80,43 +80,7 @@ public static class App {
         }
     }
 
-    static void Doc(string[] args) {
-        const int SIZE = 9;
-
-        var ℳ = new Dot[][]
-        {
-            Dots.create(count: SIZE),
-        };
-
-        ℳ.connect(X: SIZE, randomize : true);
-
-        for (var i = 0; i < 8 * 512 * 1024; i++) {
-            Dot[] T = Dots.random(SIZE);
-
-            ℳ.compute(T);
-
-            ℳ.sgd(T, learningRate: 0.1, momentum: 0.9);
-        }
-
-        Dot[] X = Dots.create(1, 2, 3, 4, 5, 6, 7, 8, 9);
-
-        Console.Write("X: "); Dots.print(X, "n4", Console.Out);
-
-        Console.WriteLine();
-
-        Dot[] Y = ℳ.compute(X);
-
-        Console.Write("Y: "); Dots.print(Y, "n4", Console.Out);
-
-        Console.WriteLine();
-
-        Console.ReadKey();
-    }
-
     static void Main(string[] args) {
-        Doc(args);
-        return;
-
         int INPUTS = 7;
 
         Dot[][] ℳ = new Dot[][]
