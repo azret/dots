@@ -34,25 +34,19 @@ public static class App {
         Console.WriteLine();
     }
 
-    static void Test(Dot[] X, Dot[][] H, Dot[] Y, bool verbose) {
-        Dots.compute(X, H, Y);
+    static void Test(Dot[] X, Dot[][] ℳ,bool verbose) {
+        Dots.compute(ℳ, X);
 
-        if (H != null && verbose) {
-            for (int l = 0; l < H.Length; l++) {
-                Inspect($"H{l}", H[l], ConsoleColor.White, verbose);
-            }
-        }
-
-        if (Y != null) {
-            Inspect("Y", Y, ConsoleColor.Yellow, verbose);
+        for (int l = 0; l < ℳ.Length; l++) {
+            Inspect($"H{l}", ℳ[l], ConsoleColor.White, verbose);
         }
 
         Inspect("X", X, ConsoleColor.Green, verbose);
         Console.WriteLine();
     }
 
-    static void Train(int episodes, Func<double> α, Func<double> μ, Dot[] Y,
-        Dot[][] H, Func<Dot[]> X, Func<Dot[], Dot[]> T,
+    static void Train(int episodes, Func<double> α, Func<double> μ,
+        Dot[][] ℳ, Func<Dot[]> X, Func<Dot[], Dot[]> T,
         Func<int, Dot[], double, double> epoch) {
 
         for (var i = 0; i < episodes; i++) {
@@ -62,9 +56,11 @@ public static class App {
 
             double e;
 
-            Dots.compute(x, H, Y);
+            Dots.compute(ℳ, x);
 
-            e = Dots.sgd(H, Y, t, α(), μ());
+            Dots.sgd(ℳ, t, α(), μ());
+
+            e = Dots.error(ℳ, t);
 
             if (epoch != null) {
                 e = epoch(i, x, e);
@@ -77,18 +73,17 @@ public static class App {
     }
 
     static void Main(string[] args) {
-        int INPUTS = 7;
+        int INPUTS = 71;
 
-        Dot[][] H = new Dot[][]
+        Dot[][] ℳ = new Dot[][]
         {
             Dots.create(INPUTS, Tanh.Ω),
+            Dots.create(INPUTS),
         };
 
-        Dot[] Y = Dots.create(INPUTS, Identity.Ω);
+        Dots.connect(ℳ, INPUTS);
 
-        Dots.connect(INPUTS, H, Y);
-
-        Dots.randomize(H, Y);
+        Dots.randomize(ℳ);
 
         bool canceled = false;
 
@@ -101,7 +96,7 @@ public static class App {
             e.Cancel = canceled = true;
         };
 
-        Test(Dots.random(INPUTS), H, Y, verbose: false);
+        Test(Dots.random(INPUTS), ℳ, verbose: false);
 
         double E0 = 0.0; double E1 = 0.0; double E2 = 0.0; double E3 = 0.0; double E4 = 0.0;
 
@@ -109,23 +104,19 @@ public static class App {
 
             // Number of episodes
 
-            8 * 32 * 64 * 128,
+            2 * 8 * 32 * 64 * 128,
 
             // Learning rate
 
-            () => 0.01,
+            () => 1.0 / (INPUTS * ℳ.Length),
 
             // Momentum
 
-            () => 0.3,
-
-            // Output vector
-
-            Y,
+            () => 1 - (1.0 / INPUTS * ℳ.Length),
 
             // Hidden layers
 
-            H,
+            ℳ,
 
             // Input vector
 
@@ -172,7 +163,7 @@ public static class App {
 
         );
 
-        Test(Dots.random(INPUTS), H, Y, verbose: false);
+        Test(Dots.random(INPUTS), ℳ, verbose: false);
 
         Console.ReadKey();
     }
