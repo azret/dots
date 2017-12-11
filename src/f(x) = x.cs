@@ -49,6 +49,8 @@ public static class App {
         Dot[][] ℳ, Func<Dot[]> X, Func<Dot[], Dot[]> T,
         Func<int, Dot[], double, double> epoch) {
 
+        double E = 0;
+
         for (var i = 0; i < episodes; i++) {
             var x = X();
 
@@ -62,6 +64,12 @@ public static class App {
 
             e = Dots.error(ℳ, t);
 
+            if (E == e) {
+                return;
+            }
+
+            E = e;
+
             if (epoch != null) {
                 e = epoch(i, x, e);
             }
@@ -72,12 +80,48 @@ public static class App {
         }
     }
 
+    static void Doc(string[] args) {
+        const int SIZE = 9;
+
+        var ℳ = new Dot[][]
+        {
+            Dots.create(count: SIZE),
+        };
+
+        ℳ.connect(X: SIZE, randomize : true);
+
+        for (var i = 0; i < 8 * 512 * 1024; i++) {
+            Dot[] T = Dots.random(SIZE);
+
+            ℳ.compute(T);
+
+            ℳ.sgd(T, learningRate: 0.1, momentum: 0.9);
+        }
+
+        Dot[] X = Dots.create(1, 2, 3, 4, 5, 6, 7, 8, 9);
+
+        Console.Write("X: "); Dots.print(X, "n4", Console.Out);
+
+        Console.WriteLine();
+
+        Dot[] Y = ℳ.compute(X);
+
+        Console.Write("Y: "); Dots.print(Y, "n4", Console.Out);
+
+        Console.WriteLine();
+
+        Console.ReadKey();
+    }
+
     static void Main(string[] args) {
-        int INPUTS = 71;
+        Doc(args);
+        return;
+
+        int INPUTS = 7;
 
         Dot[][] ℳ = new Dot[][]
         {
-            Dots.create(INPUTS, Tanh.Ω),
+            Dots.create<Sigmoid>(INPUTS),
             Dots.create(INPUTS),
         };
 
@@ -104,7 +148,7 @@ public static class App {
 
             // Number of episodes
 
-            2 * 8 * 32 * 64 * 128,
+            4 * 8 * 32 * 64 * 128,
 
             // Learning rate
 
@@ -121,7 +165,7 @@ public static class App {
             // Input vector
 
             () => {
-                return Dots.random(INPUTS, 0.5);
+                return Dots.random(INPUTS);
             },
 
             // Target vector

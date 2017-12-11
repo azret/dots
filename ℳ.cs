@@ -96,7 +96,7 @@
 #if !SAFE
         [Runtime.CompilerServices.MethodImpl(Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
         public unsafe void move(double learningRate, double momentum) {
-            double ᵷ; double Δ = learningRate * δ;
+            double ᵷ; double Δ = learningRate * δ * δƒ;
             ᵷ = Δ * ζ.ξ; ζ.β += (1 - 0) * ᵷ + (momentum) * ζ.δ; ζ.δ = ᵷ;
             fixed (Coefficient* p = β) {
                 Coefficient* c = p;
@@ -170,7 +170,16 @@
             }
         }
 
-        public static Dot[] create(double[] args) {
+        public static void print(Dot[] L, string format, IO.TextWriter W, string separator = ", ") {
+            for (int i = 0; L != null && i < L.Length; i++) {
+                if (i > 0) {
+                    W.Write(separator);
+                }
+                W.Write(L[i].ƒ.ToString(format));
+            }
+        }
+
+        public static Dot[] create(params double[] args) {
             Dot[] L = new Dot[args.Length];
             for (var i = 0; i < L.Length; i++) {
                 L[i] = args[i];
@@ -178,7 +187,15 @@
             return L;
         }
 
-        public static Dot[] create(int count, IΩ F = null) {
+        public static Dot[] create<Ω>(int count) where Ω : IΩ, new() {
+            return create(count, new Ω());
+        }
+
+        public static Dot[] create(int count) {
+            return create(count, Identity.Ω);
+        }
+
+        public static Dot[] create(int count, IΩ F) {
             Dot[] L = new Dot[count];
             for (int i = 0; i < L.Length; i++) {
                 L[i] = new Dot() { Ω = F };
@@ -196,17 +213,23 @@
     }
 
     public static partial class Dots {
-        public static void connect(Dot[][] ℳ, int X) {
+        public static void connect(this Dot[][] ℳ, int X, bool randomize = true) {
             for (int ℓ = 0; ℳ != null && ℓ < ℳ.Length; ℓ++) {
                 Dot[] L = ℳ[ℓ];
                 for (int i = 0; i < L.Length; i++) {
                     L[i].size(X);
+                    if (randomize) {
+                        for (int j = 0; j < L[i].β.Length; j++) {
+                            L[i].β[j].β = random();
+                        }
+                        L[i].ζ.β = random();
+                    }
                 }
                 X = L.Length;
             }
         }
 
-        public static void randomize(Dot[][] ℳ) {
+        public static void randomize(this Dot[][] ℳ) {
             for (int ℓ = 0; ℳ != null && ℓ < ℳ.Length; ℓ++) {
                 Dot[] L = ℳ[ℓ];
                 for (int i = 0; i < L.Length; i++) {
@@ -218,17 +241,19 @@
             }
         }
 
-        public static void compute(Dot[][] ℳ, Dot[] X) {
+        public static Dot[] compute(this Dot[][] ℳ, Dot[] X) {
+            Dot[] Y = null;
             for (int ℓ = 0; ℓ < ℳ.Length; ℓ++) {
-                Dot[] L = ℳ[ℓ];
-                for (int i = 0; i < L.Length; i++) {
-                    L[i].compute(X);
+                Y = ℳ[ℓ];
+                for (int i = 0; i < Y.Length; i++) {
+                    Y[i].compute(X);
                 }
-                X = L;
+                X = Y;
             }
+            return Y;
         }
 
-        public static double error(Dot[][] ℳ, Dot[] T) {
+        public static double error(this Dot[][] ℳ, Dot[] T) {
             Dot[] Y = null;
             for (int ℓ = ℳ.Length - 1; ℓ >= 0; ℓ--) {
                 if (Y == null) {
@@ -244,14 +269,14 @@
             return double.NaN;
         }
 
-        public static void sgd(Dot[][] ℳ, Dot[] T, double learningRate, double momentum) {
+        public static void sgd(this Dot[][] ℳ, Dot[] T, double learningRate, double momentum) {
             Dot[] Y = null;
             for (int ℓ = ℳ.Length - 1; ℓ >= 0; ℓ--) {
                 if (Y == null) {
                     Y = ℳ[ℓ];
                     System.Diagnostics.Debug.Assert(Y.Length == T.Length);
                     for (int i = 0; i < Y.Length; i++) {
-                        Y[i].δ = -(Y[i].ƒ - T[i].ƒ) * Y[i].δƒ;
+                        Y[i].δ = -(Y[i].ƒ - T[i].ƒ);
                     }
                 } else {
                     Dot[] L = ℳ[ℓ];
@@ -260,7 +285,7 @@
                         for (int j = 0; j < Y.Length; j++) {
                             Σ += Y[j].δ * Y[j].β[i].β;
                         }
-                        L[i].δ = Σ * L[i].δƒ;
+                        L[i].δ = Σ;
                     }
                     Y = L;
                 }

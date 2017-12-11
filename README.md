@@ -55,18 +55,27 @@ e.g. A one-dimensional identity function, or y = **f**(x) = x = 1.0·x + 0.0
  
 The following example learns a multi-dimensional identity function
 
-ȳ = **f**(x̄) = x̄
+**ƒ**(X̄) = X̄
 
 ```csharp
-const int SIZE = 7
-
-var Y = Dots.create(SIZE);
-
-for (int episode = 0; episode < 1024; episode++)
+var ℳ = new Dot[][]
 {
-    Dots.sgd(Y, T: Dots.random(SIZE));
+    Dots.create(count: SIZE),
+};
+
+ℳ.connect(X: SIZE, randomize : true);
+
+for (var i = 0; i < EPISODES; i++) {
+    Dot[] T = Dots.random(SIZE);
+
+    ℳ.compute(T);
+
+    ℳ.sgd(T, learningRate: 0.1, momentum: 0.9);
 }
 
-Dots.compute(X: Dots.random(SIZE), Y);
+var X = Dots.random(INPUTS);
+var Y = ℳ.compute(X);
 
+Dots.print(X, "n4", Console.Out);
+Dots.print(Y, "n4", Console.Out);
 ```
