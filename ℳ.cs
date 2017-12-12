@@ -4,6 +4,9 @@
     /// A Dot(·) is a high level linear unit that produces a single scalar value ƒ
     /// </summary>
     public partial class Dot {
+        public Dot() {
+        }
+
         public double ƒ, δƒ;
 
         public static implicit operator Dot(double value) {
@@ -23,8 +26,8 @@
     /// IΩ (Squashing Function)
     /// </summary>
     public interface IΩ {
-        double f(double x);
-        double df(double x, double y);
+        double f(double a);
+        double df(double a);
     }
 
     /// <summary>
@@ -37,7 +40,7 @@
             public double δ;
 
             public override string ToString() {
-                return δ.ToString();
+                return β.ToString();
             }
         }
 
@@ -87,7 +90,7 @@
             if (Ω == null) {
                 ƒ = y; δƒ = 1;
             } else {
-                ƒ = Ω.f(y); δƒ = Ω.df(y, ƒ);
+                ƒ = Ω.f(y); δƒ = Ω.df(ƒ);
             }
         }
 
@@ -96,53 +99,53 @@
 #if !SAFE
         [Runtime.CompilerServices.MethodImpl(Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
         public unsafe void move(double learningRate, double momentum) {
-            double ᵷ; double Δ = learningRate * δ * δƒ;
-            ᵷ = Δ * ζ.ξ; ζ.β += (1 - 0) * ᵷ + (momentum) * ζ.δ; ζ.δ = ᵷ;
-            fixed (Coefficient* p = β) {
+            double δ; double Δ = learningRate * this.δ;
+            δ = Δ * this.ζ.ξ; this.ζ.β += (1 - 0) * δ + (momentum) * ζ.δ; ζ.δ = δ;
+            fixed (Coefficient* p = this.β) {
                 Coefficient* c = p;
-                int k = β.Length / 7; int r = β.Length % 7; 
+                int k = this.β.Length / 7; int r = this.β.Length % 7; 
                 while (k-- > 0) {
-                    ᵷ = Δ * c->ξ; c->β += (1 - 0) * ᵷ + (momentum) * c->δ; c->δ = ᵷ; c++;
-                    ᵷ = Δ * c->ξ; c->β += (1 - 0) * ᵷ + (momentum) * c->δ; c->δ = ᵷ; c++;
-                    ᵷ = Δ * c->ξ; c->β += (1 - 0) * ᵷ + (momentum) * c->δ; c->δ = ᵷ; c++;
-                    ᵷ = Δ * c->ξ; c->β += (1 - 0) * ᵷ + (momentum) * c->δ; c->δ = ᵷ; c++;
-                    ᵷ = Δ * c->ξ; c->β += (1 - 0) * ᵷ + (momentum) * c->δ; c->δ = ᵷ; c++;
-                    ᵷ = Δ * c->ξ; c->β += (1 - 0) * ᵷ + (momentum) * c->δ; c->δ = ᵷ; c++;
-                    ᵷ = Δ * c->ξ; c->β += (1 - 0) * ᵷ + (momentum) * c->δ; c->δ = ᵷ; c++;
+                    δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                    δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                    δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                    δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                    δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                    δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                    δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
                 }
                 switch (r) {
                     case 6:
-                        ᵷ = Δ * c->ξ; c->β += (1 - 0) * ᵷ + (momentum) * c->δ; c->δ = ᵷ; c++;
-                        ᵷ = Δ * c->ξ; c->β += (1 - 0) * ᵷ + (momentum) * c->δ; c->δ = ᵷ; c++;
-                        ᵷ = Δ * c->ξ; c->β += (1 - 0) * ᵷ + (momentum) * c->δ; c->δ = ᵷ; c++;
-                        ᵷ = Δ * c->ξ; c->β += (1 - 0) * ᵷ + (momentum) * c->δ; c->δ = ᵷ; c++;
-                        ᵷ = Δ * c->ξ; c->β += (1 - 0) * ᵷ + (momentum) * c->δ; c->δ = ᵷ; c++;
-                        ᵷ = Δ * c->ξ; c->β += (1 - 0) * ᵷ + (momentum) * c->δ; c->δ = ᵷ; c++;
+                        δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
                         break;
                     case 5:
-                        ᵷ = Δ * c->ξ; c->β += (1 - 0) * ᵷ + (momentum) * c->δ; c->δ = ᵷ; c++;
-                        ᵷ = Δ * c->ξ; c->β += (1 - 0) * ᵷ + (momentum) * c->δ; c->δ = ᵷ; c++;
-                        ᵷ = Δ * c->ξ; c->β += (1 - 0) * ᵷ + (momentum) * c->δ; c->δ = ᵷ; c++;
-                        ᵷ = Δ * c->ξ; c->β += (1 - 0) * ᵷ + (momentum) * c->δ; c->δ = ᵷ; c++;
-                        ᵷ = Δ * c->ξ; c->β += (1 - 0) * ᵷ + (momentum) * c->δ; c->δ = ᵷ; c++;
+                        δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
                         break;
                     case 4:
-                        ᵷ = Δ * c->ξ; c->β += (1 - 0) * ᵷ + (momentum) * c->δ; c->δ = ᵷ; c++;
-                        ᵷ = Δ * c->ξ; c->β += (1 - 0) * ᵷ + (momentum) * c->δ; c->δ = ᵷ; c++;
-                        ᵷ = Δ * c->ξ; c->β += (1 - 0) * ᵷ + (momentum) * c->δ; c->δ = ᵷ; c++;
-                        ᵷ = Δ * c->ξ; c->β += (1 - 0) * ᵷ + (momentum) * c->δ; c->δ = ᵷ; c++;
+                        δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
                         break;
                     case 3:
-                        ᵷ = Δ * c->ξ; c->β += (1 - 0) * ᵷ + (momentum) * c->δ; c->δ = ᵷ; c++;
-                        ᵷ = Δ * c->ξ; c->β += (1 - 0) * ᵷ + (momentum) * c->δ; c->δ = ᵷ; c++;
-                        ᵷ = Δ * c->ξ; c->β += (1 - 0) * ᵷ + (momentum) * c->δ; c->δ = ᵷ; c++;
+                        δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
                         break;
                     case 2:
-                        ᵷ = Δ * c->ξ; c->β += (1 - 0) * ᵷ + (momentum) * c->δ; c->δ = ᵷ; c++;
-                        ᵷ = Δ * c->ξ; c->β += (1 - 0) * ᵷ + (momentum) * c->δ; c->δ = ᵷ; c++;
+                        δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
                         break;
                     case 1:
-                        ᵷ = Δ * c->ξ; c->β += (1 - 0) * ᵷ + (momentum) * c->δ; c->δ = ᵷ; c++;
+                        δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
                         break;
                     case 0:
                         break;
@@ -155,151 +158,226 @@
     }
 
     public static partial class Dots {
-        public static readonly Random randomizer = new Random(137);
+        public static readonly Random randomizer = new Random();
 
         public static double random() {
             return randomizer.NextDouble();
         }
 
-        public static void print(Dot[] L, IO.TextWriter W, string separator = ", ") {
-            for (int i = 0; L != null && i < L.Length; i++) {
-                if (i > 0) {
-                    W.Write(separator);
-                }
-                W.Write(L[i].ToString());
-            }
-        }
-
-        public static void print(Dot[] L, string format, IO.TextWriter W, string separator = ", ") {
-            for (int i = 0; L != null && i < L.Length; i++) {
-                if (i > 0) {
-                    W.Write(separator);
-                }
-                W.Write(L[i].ƒ.ToString(format));
-            }
+        public static int random(int min, int max) {
+            return randomizer.Next(min, max);
         }
 
         public static Dot[] create(params double[] args) {
-            Dot[] L = new Dot[args.Length];
-            for (var i = 0; i < L.Length; i++) {
-                L[i] = args[i];
+            Dot[] ℓ = new Dot[args.Length];
+            for (var i = 0; i < ℓ.Length; i++) {
+                ℓ[i] = args[i];
             }
-            return L;
+            return ℓ;
         }
 
-        public static Dot[] create<Ω>(int count) where Ω : IΩ, new() {
-            return create(count, new Ω());
+        public static Dot[] create<Ω>(int len) where Ω : IΩ, new() {
+            return create(len, new Ω());
         }
 
-        public static Dot[] create(int count) {
-            return create(count, Identity.Ω);
+        public static Dot[] create(int len) {
+            return create(len, Identity.Ω);
         }
 
-        public static Dot[] create(int count, IΩ F) {
-            Dot[] L = new Dot[count];
-            for (int i = 0; i < L.Length; i++) {
-                L[i] = new Dot() { Ω = F };
+        public static Dot[] create(int len, IΩ Ω) {
+            Dot[] ℓ = new Dot[len];
+            for (int i = 0; i < ℓ.Length; i++) {
+                ℓ[i] = new Dot() { Ω = Ω };
             }
-            return L;
+            return ℓ;
         }
 
-        public static Dot[] random(int count, double median = 1.0, double scale = 1.0) {
-            Dot[] L = new Dot[count];
-            for (var i = 0; i < L.Length; i++) {
-                L[i] = scale * Math.Round(random(), 2) * (median - Math.Round(random(), 2));
+        public static Dot[] create(int len, double median = 1.0, double scale = 1.0) {
+            Dot[] ℓ = new Dot[len];
+            for (var i = 0; i < ℓ.Length; i++) {
+                ℓ[i] = scale * Math.Round(random(), 2) * (median - Math.Round(random(), 2));
             }
-            return L;
+            return ℓ;
+        }
+
+        public static Dot[] encode(int len, string src) {
+            Dot[] ℓ = new Dot[len];
+            for (var i = 0; i < ℓ.Length; i++) {
+                ℓ[i] = 0 / (1307 * 0.5);
+                if (i < src.Length) {
+                    ℓ[i].ƒ = Math.Round(src[i] / (1307 * 0.5), 4);
+                }
+            }
+            return ℓ;
+        }
+
+        public static string decode(this Dot[] src) {
+            char[] s = new char[src.Length];
+            for (var i = 0; i < src.Length; i++) {
+                s[i] = (char)Math.Round(src[i] * (1307 * 0.5));
+            }
+            return new string(s);
+        }
+
+        static Dot.Coefficient[] copy(this Dot.Coefficient[] src) {
+            Dot.Coefficient[] ɸ = new Dot.Coefficient[src.Length];
+            for (int i = 0; i < ɸ.Length; i++) {
+                ɸ[i] = src[i];
+            }
+            return ɸ;
+        }
+
+        static Dot copy(this Dot src) {
+            return new Dot() {
+                Ω = src.Ω,
+                ƒ = src.ƒ, δƒ = src.δƒ,
+                β = copy(src.β), ζ = src.ζ,
+                δ = src.δ,
+            };
+        }
+
+        public static Dot[] copy(this Dot[] src) {
+            Dot[] ɸ = new Dot[src.Length];
+            for (int i = 0; i < ɸ.Length; i++) {
+                ɸ[i] = src[i].copy();
+            }
+            return ɸ;
+        }
+
+        public static Dot[][] copy(this Dot[][] src) {
+            Dot[][] ɸ = new Dot[src.Length][];
+            for (int h = 0; h < ɸ.Length; h++) {
+                ɸ[h] = src[h].copy();
+            }
+            return ɸ;
+        }
+
+        static void add(this Dot dst, Dot ɸ) {
+            Diagnostics.Debug.Assert(dst.β.Length == ɸ.β.Length);
+            for (int j = 0; j < dst.β.Length; j++) {
+                dst.β[j].β += ɸ.β[j].β;
+            }
+            dst.ζ.β += ɸ.ζ.β;
+        }
+
+        public static void add(this Dot[] dst, Dot[] ɸ) {
+            Diagnostics.Debug.Assert(dst.Length == ɸ.Length);
+            for (int i = 0; i < dst.Length; i++) {
+                dst[i].add(ɸ[i]);
+            }
+        }
+
+        public static void add(this Dot[][] dst, Dot[][] ɸ) {
+            Diagnostics.Debug.Assert(dst.Length == ɸ.Length);
+            for (int h = 0; h < dst.Length; h++) {
+                dst[h].add(ɸ[h]);
+            }
+        }
+
+        public static void multiply(this Dot[][] dst, double scalar) {
+            for (int h = 0; h < dst.Length; h++) {
+                Dot[] ℓ = dst[h];
+                for (int i = 0; i < ℓ.Length; i++) {
+                    for (int j = 0; j < ℓ[i].β.Length; j++) {
+                        ℓ[i].β[j].β *= scalar;
+                    }
+                    ℓ[i].ζ.β *= scalar;
+                }
+            }
+        }
+
+        public static void randomize(this Dot[][] dst) {
+            for (int h = 0; h < dst.Length; h++) {
+                Dot[] ℓ = dst[h];
+                for (int i = 0; i < ℓ.Length; i++) {
+                    for (int j = 0; j < ℓ[i].β.Length; j++) {
+                        ℓ[i].β[j].β = random();
+                    }
+                    ℓ[i].ζ.β = random();
+                }
+            }
         }
     }
 
     public static partial class Dots {
         public static void connect(this Dot[][] ℳ, int ξ, bool randomize = true) {
-            for (int ℓ = 0; ℳ != null && ℓ < ℳ.Length; ℓ++) {
-                Dot[] L = ℳ[ℓ];
-                for (int i = 0; i < L.Length; i++) {
-                    L[i].size(ξ);
+            for (int h = 0; ℳ != null && h < ℳ.Length; h++) {
+                Dot[] ℓ = ℳ[h];
+                for (int i = 0; i < ℓ.Length; i++) {
+                    ℓ[i].size(ξ);
                     if (randomize) {
-                        for (int j = 0; j < L[i].β.Length; j++) {
-                            L[i].β[j].β = random();
+                        for (int j = 0; j < ℓ[i].β.Length; j++) {
+                            ℓ[i].β[j].β = random();
                         }
-                        L[i].ζ.β = random();
+                        ℓ[i].ζ.β = random();
                     }
                 }
-                ξ = L.Length;
-            }
-        }
-
-        public static void randomize(this Dot[][] ℳ) {
-            for (int ℓ = 0; ℳ != null && ℓ < ℳ.Length; ℓ++) {
-                Dot[] ꝟ = ℳ[ℓ];
-                for (int i = 0; i < ꝟ.Length; i++) {
-                    for (int j = 0; j < ꝟ[i].β.Length; j++) {
-                        ꝟ[i].β[j].β = random();
-                    }
-                    ꝟ[i].ζ.β = random();
-                }
+                ξ = ℓ.Length;
             }
         }
 
         public static double error(this Dot[][] ℳ, Dot[] Ꝙ) {
             Dot[] γ = null;
-            for (int ℓ = ℳ.Length - 1; ℓ >= 0; ℓ--) {
+            for (int h = ℳ.Length - 1; h >= 0; h--) {
                 if (γ == null) {
-                    γ = ℳ[ℓ];
+                    γ = ℳ[h];
                     System.Diagnostics.Debug.Assert(γ.Length == Ꝙ.Length);
-                    double Σ = 0.0;
+                    double ε = 0.0;
                     for (int i = 0; i < γ.Length; i++) {
-                        Σ += Math.Pow(γ[i].ƒ - Ꝙ[i].ƒ, 2);
+                        ε += Math.Pow(γ[i].ƒ - Ꝙ[i].ƒ, 2);
                     }
-                    return Σ / 2;
+                    return ε / 2;
                 }
             }
             return double.NaN;
         }
 
         public static Dot[] compute(this Dot[][] ℳ, Dot[] ξ) {
-            for (int ℓ = 0; ℓ < ℳ.Length; ℓ++) {
-                Dot[] ꝟ = ℳ[ℓ];
-                for (int i = 0; i < ꝟ.Length; i++) {
-                    ꝟ[i].compute(ξ);
+            for (int h = 0; h < ℳ.Length; h++) {
+                Dot[] ℓ = ℳ[h];
+                for (int i = 0; i < ℓ.Length; i++) {
+                    ℓ[i].compute(ξ);
                 }
-                ξ = ꝟ;
+                ξ = ℓ;
             }
             return ξ;
         }
 
-        public static void sgd(this Dot[][] ℳ, Dot[] Ꝙ, double learningRate, double momentum) {
+        public static double sgd(this Dot[][] ℳ, Dot[] Ꝙ, double rate, double momentum) {
+            double ε = 0, δ = 0;
             Dot[] γ = null;
-            for (int ℓ = ℳ.Length - 1; ℓ >= 0; ℓ--) {
+            for (int h = ℳ.Length - 1; h >= 0; h--) {
                 if (γ == null) {
-                    γ = ℳ[ℓ];
+                    γ = ℳ[h];
                     System.Diagnostics.Debug.Assert(γ.Length == Ꝙ.Length);
                     for (int i = 0; i < γ.Length; i++) {
-                        γ[i].δ = -(γ[i].ƒ - Ꝙ[i].ƒ);
+                        γ[i].δ = δ = -(γ[i].ƒ - Ꝙ[i].ƒ) * γ[i].δƒ;
+                        ε += Math.Pow(δ, 2) / 2;
                     }
                 } else {
-                    Dot[] ꝟ = ℳ[ℓ];
-                    for (int i = 0; i < ꝟ.Length; i++) {
-                        double Σ = 0.0;
+                    Dot[] ℓ = ℳ[h];
+                    for (int i = 0; i < ℓ.Length; i++) {
+                        δ = 0;
                         for (int j = 0; j < γ.Length; j++) {
-                            Σ += γ[j].δ * γ[j].β[i].β;
+                            δ += γ[j].δ * γ[j].β[i].β;
                         }
-                        ꝟ[i].δ = Σ;
+                        ℓ[i].δ = δ * ℓ[i].δƒ;
                     }
-                    γ = ꝟ;
+                    γ = ℓ;
                 }
             }
-            for (int ℓ = ℳ.Length - 1; ℓ >= 0; ℓ--) {
-                Dot[] ꝟ = ℳ[ℓ];
-                for (int i = 0; i < ꝟ.Length; i++) {
-                    ꝟ[i].move(learningRate, momentum);
+            for (int h = ℳ.Length - 1; h >= 0; h--) {
+                Dot[] ℓ = ℳ[h];
+                for (int i = 0; i < ℓ.Length; i++) {
+                    ℓ[i].move(rate, momentum);
                 }
             }
+            return ε;
         }
     }
 
     /// <summary>
-    /// Tanh (ƒ(x) = (e²ˣ - 1) / (e²ˣ + 1))
+    /// Tanh (ƒ(a) = (e²ᵃ - 1) / (e²ᵃ + 1))
     /// </summary>
     public class Tanh : IΩ {
         public static readonly IΩ Ω = New();
@@ -309,32 +387,32 @@
         }
 
         public override string ToString() {
-            return "ƒ(x) = (e²ˣ - 1) / (e²ˣ + 1)";
+            return "ƒ(a) = (e²ᵃ - 1) / (e²ᵃ + 1)";
         }
 
         static double tanh(double exp) {
             return (exp - 1) / (exp + 1);
         }
 
-        public static double f(double x) {
-            return tanh(Math.Exp(2 * x));
+        public static double f(double a) {
+            return tanh(Math.Exp(2 * a));
         }
 
-        public static double df(double x, double y) {
-            return (1 - y * y);
+        public static double df(double a) {
+            return (1 - a * a);
         }
 
-        double IΩ.f(double x) {
-            return f(x);
+        double IΩ.f(double a) {
+            return f(a);
         }
 
-        double IΩ.df(double x, double y) {
-            return df(x, y);
+        double IΩ.df(double a) {
+            return df(a);
         }
     }
 
     /// <summary>
-    /// Sigmoid (ƒ(x) = 1 / (1 + e⁻ˣ))
+    /// Sigmoid (ƒ(a) = 1 / (1 + e⁻ᵃ))
     /// </summary>
     public class Sigmoid : IΩ {
         public static readonly IΩ Ω = New();
@@ -344,32 +422,32 @@
         }
 
         public override string ToString() {
-            return "ƒ(x) = 1 / (1 + e⁻ˣ)";
+            return "ƒ(a) = 1 / (1 + e⁻ᵃ)";
         }
 
         static double sigmoid(double exp) {
             return 1 / (1 + exp);
         }
 
-        public static double f(double x) {
-            return sigmoid(Math.Exp(-x));
+        public static double f(double a) {
+            return sigmoid(Math.Exp(-a));
         }
 
-        public static double df(double x, double y) {
-            return y * (1 - y);
+        public static double df(double a) {
+            return a * (1 - a);
         }
 
-        double IΩ.f(double x) {
-            return f(x);
+        double IΩ.f(double a) {
+            return f(a);
         }
 
-        double IΩ.df(double x, double y) {
-            return df(x, y);
+        double IΩ.df(double a) {
+            return df(a);
         }
     }
 
     /// <summary>
-    /// Softplus (ƒ(x) = log(1 + eˣ))
+    /// Softplus (ƒ(a) = log(1 + eᵃ))
     /// </summary>
     public class Softplus : IΩ {
         public static readonly IΩ Ω = New();
@@ -379,28 +457,28 @@
         }
 
         public override string ToString() {
-            return "ƒ(x) = log(1 + eˣ)";
+            return "ƒ(a) = log(1 + eᵃ)";
         }
 
-        public static double f(double x) {
-            return Math.Log(1 + Math.Exp(x));
+        public static double f(double a) {
+            return Math.Log(1 + Math.Exp(a));
         }
 
-        public static double df(double x, double y) {
-            return 1 / (1 + Math.Exp(-x));
+        public static double df(double a) {
+            return 1 / (1 + Math.Exp(-a));
         }
 
-        double IΩ.f(double x) {
-            return f(x);
+        double IΩ.f(double a) {
+            return f(a);
         }
 
-        double IΩ.df(double x, double y) {
-            return df(x, y);
+        double IΩ.df(double a) {
+            return df(a);
         }
     }
 
     /// <summary>
-    /// ReLU (ƒ(x) = max(0, x))
+    /// ReLU (ƒ(a) = max(0, a))
     /// </summary>
     public class ReLU : IΩ {
         public static readonly IΩ Ω = New();
@@ -410,28 +488,28 @@
         }
 
         public override string ToString() {
-            return "ƒ(x) = max(0, x)";
+            return "ƒ(a) = max(0, a)";
         }
 
-        public static double f(double x) {
-            return Math.Max(0, x);
+        public static double f(double a) {
+            return Math.Max(0, a);
         }
 
-        public static double df(double x, double y) {
-            return Math.Max(0, Math.Sign(x));
+        public static double df(double a) {
+            return Math.Max(0, Math.Sign(a));
         }
 
-        double IΩ.f(double x) {
-            return f(x);
+        double IΩ.f(double a) {
+            return f(a);
         }
 
-        double IΩ.df(double x, double y) {
-            return df(x, y);
+        double IΩ.df(double a) {
+            return df(a);
         }
     }
 
     /// <summary>
-    /// Identity (ƒ(x) = x)
+    /// Identity (ƒ(a) = a)
     /// </summary>
     public class Identity : IΩ {
         public static readonly IΩ Ω = New();
@@ -441,23 +519,94 @@
         }
 
         public override string ToString() {
-            return "ƒ(x) = x";
+            return "ƒ(a) = a";
         }
 
-        public static double f(double x) {
-            return x;
+        public static double f(double a) {
+            return a;
         }
 
-        public static double df(double x, double y) {
+        public static double df(double a) {
             return 1;
         }
 
-        double IΩ.f(double x) {
-            return f(x);
+        double IΩ.f(double a) {
+            return f(a);
         }
 
-        double IΩ.df(double x, double y) {
-            return df(x, y);
+        double IΩ.df(double a) {
+            return df(a);
+        }
+    }
+
+    public static partial class Dots {
+        public static void print(this Dot[] src, IO.TextWriter console, string separator = ", ") {
+            for (int i = 0; src != null && i < src.Length; i++) {
+                if (i > 0) {
+                    console.Write(separator);
+                }
+                console.Write(src[i].ToString());
+            }
+        }
+
+        public static void print(this Dot[] src, string format, IO.TextWriter console, string separator = ", ") {
+            for (int i = 0; src != null && i < src.Length; i++) {
+                if (i > 0) {
+                    console.Write(separator);
+                }
+                console.Write(src[i].ƒ.ToString(format));
+            }
+        }
+
+        public static void print(this Dot[][] src, IO.TextWriter console) {
+            for (int h = 0; h < src.Length; h++) {
+                Dot[] ℓ = src[h];
+                for (int i = 0; i < ℓ.Length; i++) {
+                    console.Write($"ƒ({i}) = [");
+                    if (console == System.Console.Out) {
+                        if (ℓ[i].ζ.β > 0) {
+                            if (ℓ[i].ζ.β >= 0.0001) {
+                                System.Console.ForegroundColor = ConsoleColor.Green;
+                            } else {
+                                System.Console.ForegroundColor = ConsoleColor.Gray;
+                            }
+                        } else {
+                            if (ℓ[i].ζ.β <= -0.0001) {
+                                System.Console.ForegroundColor = ConsoleColor.Red;
+                            } else {
+                                System.Console.ForegroundColor = ConsoleColor.Gray;
+                            }
+                        }
+                    }
+                    console.Write($"{ℓ[i].ζ.β:f4}");
+                    if (console == System.Console.Out) {
+                        System.Console.ResetColor();
+                    }
+                    for (int j = 0; j < ℓ[i].β.Length; j++) {
+                        console.Write($",");
+                        if (console == System.Console.Out) {
+                            if (ℓ[i].β[j].β > 0) {
+                                if (ℓ[i].β[j].β >= 0.0001) {
+                                    System.Console.ForegroundColor = ConsoleColor.Green;
+                                } else {
+                                    System.Console.ForegroundColor = ConsoleColor.Gray;
+                                }
+                            } else {
+                                if (ℓ[i].β[j].β <= -0.0001) {
+                                    System.Console.ForegroundColor = ConsoleColor.Red;
+                                } else {
+                                    System.Console.ForegroundColor = ConsoleColor.Gray;
+                                }
+                            }
+                        }
+                        console.Write($"{ℓ[i].β[j].β:f4}");
+                        if (console == System.Console.Out) {
+                            System.Console.ResetColor();
+                        }
+                    }
+                    console.Write("]\r\n");
+                }
+            }
         }
     }
 }
