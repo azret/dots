@@ -105,47 +105,47 @@
                 Coefficient* c = p;
                 int k = this.β.Length / 7; int r = this.β.Length % 7; 
                 while (k-- > 0) {
-                    δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
-                    δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
-                    δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
-                    δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
-                    δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
-                    δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
-                    δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                    δ = Δ * c->ξ; c->β += (1 - momentum) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                    δ = Δ * c->ξ; c->β += (1 - momentum) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                    δ = Δ * c->ξ; c->β += (1 - momentum) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                    δ = Δ * c->ξ; c->β += (1 - momentum) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                    δ = Δ * c->ξ; c->β += (1 - momentum) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                    δ = Δ * c->ξ; c->β += (1 - momentum) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                    δ = Δ * c->ξ; c->β += (1 - momentum) * δ + (momentum) * c->δ; c->δ = δ; c++;
                 }
                 switch (r) {
                     case 6:
-                        δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
-                        δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
-                        δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
-                        δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
-                        δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
-                        δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->ξ; c->β += (1 - momentum) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->ξ; c->β += (1 - momentum) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->ξ; c->β += (1 - momentum) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->ξ; c->β += (1 - momentum) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->ξ; c->β += (1 - momentum) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->ξ; c->β += (1 - momentum) * δ + (momentum) * c->δ; c->δ = δ; c++;
                         break;
                     case 5:
-                        δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
-                        δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
-                        δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
-                        δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
-                        δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->ξ; c->β += (1 - momentum) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->ξ; c->β += (1 - momentum) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->ξ; c->β += (1 - momentum) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->ξ; c->β += (1 - momentum) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->ξ; c->β += (1 - momentum) * δ + (momentum) * c->δ; c->δ = δ; c++;
                         break;
                     case 4:
-                        δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
-                        δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
-                        δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
-                        δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->ξ; c->β += (1 - momentum) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->ξ; c->β += (1 - momentum) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->ξ; c->β += (1 - momentum) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->ξ; c->β += (1 - momentum) * δ + (momentum) * c->δ; c->δ = δ; c++;
                         break;
                     case 3:
-                        δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
-                        δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
-                        δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->ξ; c->β += (1 - momentum) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->ξ; c->β += (1 - momentum) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->ξ; c->β += (1 - momentum) * δ + (momentum) * c->δ; c->δ = δ; c++;
                         break;
                     case 2:
-                        δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
-                        δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->ξ; c->β += (1 - momentum) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->ξ; c->β += (1 - momentum) * δ + (momentum) * c->δ; c->δ = δ; c++;
                         break;
                     case 1:
-                        δ = Δ * c->ξ; c->β += (1 - 0) * δ + (momentum) * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->ξ; c->β += (1 - momentum) * δ + (momentum) * c->δ; c->δ = δ; c++;
                         break;
                     case 0:
                         break;
@@ -363,14 +363,14 @@
                         }
                         ℓ[i].δ = δ * ℓ[i].δƒ;
                     }
+                    for (int i = 0; i < γ.Length; i++) {
+                        γ[i].move(rate, momentum);
+                    }
                     γ = ℓ;
                 }
             }
-            for (int h = ℳ.Length - 1; h >= 0; h--) {
-                Dot[] ℓ = ℳ[h];
-                for (int i = 0; i < ℓ.Length; i++) {
-                    ℓ[i].move(rate, momentum);
-                }
+            for (int i = 0; i < γ.Length; i++) {
+                γ[i].move(rate, momentum);
             }
             return ε;
         }

@@ -20,23 +20,28 @@ public static class App {
     }
 
     class Gram {
-        public string gram;
+        public string g;
     }
 
-    static List<Gram> Load(out int max) {
+    static List<Gram> Load(out int max, out ISet<char> digest) {
         List<Gram> grams = new List<Gram>();
 
-        char[] breaks = new char[] { '/', '\\', '\'', '"',  ',', ';', '.', '?', '!', ' ', '[', ']', '{', '}', '(', ')', '\r', '\n', '\t',
+        char[] breaks = new char[] { '/', '\\', '\'', '"', ':', ',', ';', '.', '?', '!', ' ', '[', ']', '{', '}', '(', ')', '\r', '\n', '\t',
             '1', '2', '3', '4', '5', '6', '7', '8', '9' };
 
-        max = 3;
+        digest = new HashSet<char>();
+
+        max = 7;
 
         foreach (string g in AMICITIA.Split(breaks, StringSplitOptions.RemoveEmptyEntries)) {
             if (!string.IsNullOrWhiteSpace(g)) {
                 max = Math.Max(max, g.Length);
                 grams.Add(new Gram() {
-                    gram = g,
+                    g = g,
                 });
+                foreach (char c in g) {
+                    digest.Add(c);
+                } 
             }
         }
 
@@ -44,15 +49,14 @@ public static class App {
     }
 
     static void Main(string[] args) {
-        int MAX;
+        int MAX; ISet<char> digest;
 
-        var Ꝙ = Load(out MAX);
-
-        MAX = (int)(MAX * 1.3);
+        var Ꝙ = Load(out MAX, out digest);
 
         Dot[][] ℳ = new Dot[][]
         {
-           Dots.create<ReLU>(MAX)
+           Dots.create<Sigmoid>((int)(MAX * 1.3)),
+           Dots.create(MAX)
         };
 
         Dots.connect(ℳ, MAX);
@@ -60,13 +64,7 @@ public static class App {
         bool canceled = false;
 
         Console.CancelKeyPress += (sender, e) => {
-
-            if (canceled) {
-                Process.GetCurrentProcess().Kill();
-            }
-
             e.Cancel = canceled = true;
-
         };
 
         int iter = 0;
@@ -89,11 +87,11 @@ public static class App {
 
                     int n = randomizer.Next(0, Ꝙ.Count);
 
-                    var ξn = Dots.encode(MAX, Ꝙ[n].gram);
+                    var ξn = Dots.encode(MAX, Ꝙ[n].g);
 
                     H.compute(ξn);
 
-                    string s = Ꝙ[n].gram;
+                    string s = Ꝙ[n].g;
 
                     var Ꝙn = Dots.encode(MAX, s);
 
@@ -137,12 +135,22 @@ public static class App {
         }
 
         for (var k = 0; k < 31; k++) {
-            Test(Dots.encode(MAX, Ꝙ[Dots.random(0, Ꝙ.Count)].gram), ℳ, verbose: false);
+            Test(Dots.encode(MAX, Ꝙ[Dots.random(0, Ꝙ.Count)].g), ℳ, verbose: false);
         }
 
         ℳ.print(Console.Out);
 
-        Console.ReadKey();
+        Console.WriteLine("\r\nPress Ctrl + Q to quit...\r\n");
+
+        bool stop = false;
+
+        while (!stop) {
+            ConsoleKeyInfo cki = System.Console.ReadKey(true);
+            if (cki.Modifiers.HasFlag(ConsoleModifiers.Control)
+&& cki.Key == ConsoleKey.Q) {
+                stop = true;
+            }
+        }
     }
 
     static string AMICITIA = @"
