@@ -38,10 +38,11 @@ public static class App {
 
         var Ꝙ = Load(out MAX, out digest);
 
+        MAX *= (int)2.1;
+
         Dot[][] ℳ = new Dot[][]
         {
-           // Dots.create<Sigmoid>(MAX),
-           // Dots.create<Sigmoid>(MAX),
+           Dots.create<Sigmoid>(MAX),
            Dots.create(MAX)
         };
 
@@ -73,13 +74,15 @@ public static class App {
 
                     int n = randomizer.Next(0, Ꝙ.Count);
 
-                    var X = Dots.encode(MAX, Ꝙ[n].g);
+                    string x = Ꝙ[n].g;
+
+                    var X = Dots.encode(MAX, x);
 
                     // X = Dots.random(MAX, randomizer);
 
-                    string s = Ꝙ[n].g;
+                    string ŷ = string.Join("·", x.ToCharArray());
 
-                    var Ŷ = Dots.encode(MAX, s);
+                    var Ŷ = Dots.encode(MAX, ŷ);
 
                     // Ŷ = X;
 
@@ -89,7 +92,7 @@ public static class App {
 
                         Ŷ,
 
-                        rate: 1e-1f,
+                        rate: 1e-3f,
 
                         momentum: 9e-1f
 
@@ -100,7 +103,7 @@ public static class App {
                     e = E / (k + 1);
 
                     if (iter % 1024 == 0)
-                        Console.WriteLine($"{iter:n0}: {e} {s}");
+                        Console.WriteLine($"{iter:n0}: {e} {x} → {ŷ}");
 
                     if (canceled || e <= double.Epsilon || double.IsNaN(e) || double.IsInfinity(e)) {
                         state.Break();
@@ -125,20 +128,28 @@ public static class App {
         Console.WriteLine();
         Console.Out.WriteLine(ℳ, "n4");
 
-        for (var k = 0; k < 1; k++) {
-            var X = Dots.encode(MAX, Ꝙ[Dots.random(0, Ꝙ.Count)].g);
+        for (var k = 0; k < 7; k++) {
+            string s = Ꝙ[Dots.random(0, Ꝙ.Count)].g;
+
+            var X = Dots.encode(MAX, s);
             var Y = Dots.compute(ℳ, X);
+            var Ŷ = Dots.encode(MAX, string.Join("·", s.ToCharArray()));
+
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.Write("X:");
+            Console.WriteLine($"{Dots.decode(X)}");
             Console.ResetColor();
-            Console.Out.WriteLine(X, "n4");
-            Console.WriteLine(Dots.decode(X));
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.Write("Y:");
+            Console.Out.WriteLine(X, "n2");
+
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine($"{Dots.decode(Ŷ)}");
             Console.ResetColor();
-            Console.Out.WriteLine(Y, "n4");
-            Console.WriteLine(Dots.decode(Y));
+            Console.Out.WriteLine(Ŷ, "n2");
+
+            Console.ForegroundColor = ConsoleColor.Magenta;
+            Console.WriteLine($"{Dots.decode(Y)}");
             Console.ResetColor();
+            Console.Out.WriteLine(Y, "n2");
+
         }
         Console.WriteLine();
 

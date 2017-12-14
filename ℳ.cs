@@ -122,54 +122,54 @@
         }
 
         [Runtime.CompilerServices.MethodImpl(Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        public unsafe void move(float rate, float momentum) {
-            float δ; float Δ = (1 - momentum) * rate * this.δ;
-            δ = Δ * this.ζ.χ; this.ζ.β += (1 - 0) * δ + (momentum) * ζ.δ; ζ.δ = δ;
+        public unsafe void move(float α /* learning rate */, float μ /* momentum */) {
+            float δ; float Δ = α * /* gradient */ this.δ;
+            δ = Δ * this.ζ.χ; this.ζ.β += (1 - 0) * δ + μ * ζ.δ; ζ.δ = δ;
             fixed (Coefficient* p = this.β) {
                 Coefficient* c = p;
                 int k = this.β.Length / 7; int r = this.β.Length % 7; 
                 while (k-- > 0) {
-                    δ = Δ * c->χ; c->β += δ + (momentum) * c->δ; c->δ = δ; c++;
-                    δ = Δ * c->χ; c->β += δ + (momentum) * c->δ; c->δ = δ; c++;
-                    δ = Δ * c->χ; c->β += δ + (momentum) * c->δ; c->δ = δ; c++;
-                    δ = Δ * c->χ; c->β += δ + (momentum) * c->δ; c->δ = δ; c++;
-                    δ = Δ * c->χ; c->β += δ + (momentum) * c->δ; c->δ = δ; c++;
-                    δ = Δ * c->χ; c->β += δ + (momentum) * c->δ; c->δ = δ; c++;
-                    δ = Δ * c->χ; c->β += δ + (momentum) * c->δ; c->δ = δ; c++;
+                    δ = Δ * c->χ; c->β += δ + μ * c->δ; c->δ = δ; c++;
+                    δ = Δ * c->χ; c->β += δ + μ * c->δ; c->δ = δ; c++;
+                    δ = Δ * c->χ; c->β += δ + μ * c->δ; c->δ = δ; c++;
+                    δ = Δ * c->χ; c->β += δ + μ * c->δ; c->δ = δ; c++;
+                    δ = Δ * c->χ; c->β += δ + μ * c->δ; c->δ = δ; c++;
+                    δ = Δ * c->χ; c->β += δ + μ * c->δ; c->δ = δ; c++;
+                    δ = Δ * c->χ; c->β += δ + μ * c->δ; c->δ = δ; c++;
                 }
                 switch (r) {
                     case 6:
-                        δ = Δ * c->χ; c->β += δ + (momentum) * c->δ; c->δ = δ; c++;
-                        δ = Δ * c->χ; c->β += δ + (momentum) * c->δ; c->δ = δ; c++;
-                        δ = Δ * c->χ; c->β += δ + (momentum) * c->δ; c->δ = δ; c++;
-                        δ = Δ * c->χ; c->β += δ + (momentum) * c->δ; c->δ = δ; c++;
-                        δ = Δ * c->χ; c->β += δ + (momentum) * c->δ; c->δ = δ; c++;
-                        δ = Δ * c->χ; c->β += δ + (momentum) * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->χ; c->β += δ + μ * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->χ; c->β += δ + μ * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->χ; c->β += δ + μ * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->χ; c->β += δ + μ * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->χ; c->β += δ + μ * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->χ; c->β += δ + μ * c->δ; c->δ = δ; c++;
                         break;
                     case 5:
-                        δ = Δ * c->χ; c->β += δ + (momentum) * c->δ; c->δ = δ; c++;
-                        δ = Δ * c->χ; c->β += δ + (momentum) * c->δ; c->δ = δ; c++;
-                        δ = Δ * c->χ; c->β += δ + (momentum) * c->δ; c->δ = δ; c++;
-                        δ = Δ * c->χ; c->β += δ + (momentum) * c->δ; c->δ = δ; c++;
-                        δ = Δ * c->χ; c->β += δ + (momentum) * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->χ; c->β += δ + μ * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->χ; c->β += δ + μ * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->χ; c->β += δ + μ * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->χ; c->β += δ + μ * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->χ; c->β += δ + μ * c->δ; c->δ = δ; c++;
                         break;
                     case 4:
-                        δ = Δ * c->χ; c->β += δ + (momentum) * c->δ; c->δ = δ; c++;
-                        δ = Δ * c->χ; c->β += δ + (momentum) * c->δ; c->δ = δ; c++;
-                        δ = Δ * c->χ; c->β += δ + (momentum) * c->δ; c->δ = δ; c++;
-                        δ = Δ * c->χ; c->β += δ + (momentum) * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->χ; c->β += δ + μ * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->χ; c->β += δ + μ * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->χ; c->β += δ + μ * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->χ; c->β += δ + μ * c->δ; c->δ = δ; c++;
                         break;
                     case 3:
-                        δ = Δ * c->χ; c->β += δ + (momentum) * c->δ; c->δ = δ; c++;
-                        δ = Δ * c->χ; c->β += δ + (momentum) * c->δ; c->δ = δ; c++;
-                        δ = Δ * c->χ; c->β += δ + (momentum) * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->χ; c->β += δ + μ * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->χ; c->β += δ + μ * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->χ; c->β += δ + μ * c->δ; c->δ = δ; c++;
                         break;
                     case 2:
-                        δ = Δ * c->χ; c->β += δ + (momentum) * c->δ; c->δ = δ; c++;
-                        δ = Δ * c->χ; c->β += δ + (momentum) * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->χ; c->β += δ + μ * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->χ; c->β += δ + μ * c->δ; c->δ = δ; c++;
                         break;
                     case 1:
-                        δ = Δ * c->χ; c->β += δ + (momentum) * c->δ; c->δ = δ; c++;
+                        δ = Δ * c->χ; c->β += δ + μ * c->δ; c->δ = δ; c++;
                         break;
                     case 0:
                         break;
