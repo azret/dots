@@ -1,24 +1,9 @@
 ﻿using System;
-using System.Dots;
-using System.Diagnostics;
 using System.Collections.Generic;
+using System.Dots;
 using System.Threading.Tasks;
 
 public static class App {
-    static void Inspect(string header, Dot[] A, ConsoleColor color, bool verbose) {
-        Console.Write($"{header}: ");
-        Console.ForegroundColor = color;
-        Console.Write(Dots.decode(A));
-        Console.ResetColor();
-        Console.WriteLine();
-    }
-
-    static void Test(Dot[] X, Dot[][] ℳ, bool verbose) {
-        var Y = Dots.compute(ℳ, X);
-        Inspect("X", X, ConsoleColor.Green, verbose);
-        Inspect("Y", Y, ConsoleColor.Yellow, verbose);
-    }
-
     class Gram {
         public string g;
     }
@@ -35,7 +20,7 @@ public static class App {
 
         foreach (string g in AMICITIA.Split(breaks, StringSplitOptions.RemoveEmptyEntries)) {
             if (!string.IsNullOrWhiteSpace(g)) {
-                max = Math.Max(max, g.Length);
+                max = System.Math.Max(max, g.Length);
                 grams.Add(new Gram() {
                     g = g,
                 });
@@ -55,7 +40,8 @@ public static class App {
 
         Dot[][] ℳ = new Dot[][]
         {
-           Dots.create<Sigmoid>((int)(MAX * 1.3)),
+           // Dots.create<Sigmoid>(MAX),
+           // Dots.create<Sigmoid>(MAX),
            Dots.create(MAX)
         };
 
@@ -73,7 +59,7 @@ public static class App {
 
             List<Dot[][]> P = new List<Dot[][]>();
 
-            for (int p = 0; p < Environment.ProcessorCount * 7; p++) {
+            for (int p = 0; p < Environment.ProcessorCount; p++) {
                 P.Add(ℳ.copy());
             }
 
@@ -81,35 +67,37 @@ public static class App {
 
                 Random randomizer = new Random();
 
-                double ε = 0.0;
+                double E = 0.0;
 
-                for (var k = 0; k < 1307; k++) {
+                for (var k = 0; k < 3797; k++) {
 
                     int n = randomizer.Next(0, Ꝙ.Count);
 
-                    var ξn = Dots.encode(MAX, Ꝙ[n].g);
+                    var X = Dots.encode(MAX, Ꝙ[n].g);
 
-                    H.compute(ξn);
+                    // X = Dots.random(MAX, randomizer);
 
                     string s = Ꝙ[n].g;
 
-                    var Ꝙn = Dots.encode(MAX, s);
+                    var Ŷ = Dots.encode(MAX, s);
+
+                    // Ŷ = X;
 
                     double e;
 
-                    ε += e = H.sgd(
+                    E += e = H.sgd(X,
 
-                        Ꝙn,
+                        Ŷ,
 
-                        rate: 1.0 / (MAX),
+                        rate: 1e-1f,
 
-                        momentum: 1 - 1.0 / MAX
+                        momentum: 9e-1f
 
                     );
 
                     System.Threading.Interlocked.Increment(ref iter);
 
-                    e = ε / (k + 1);
+                    e = E / (k + 1);
 
                     if (iter % 1024 == 0)
                         Console.WriteLine($"{iter:n0}: {e} {s}");
@@ -122,28 +110,40 @@ public static class App {
 
             });
 
-            ℳ.multiply(0.0);
+            ℳ.multiply(0.0f);
 
             foreach (var H in P) {
                 ℳ.add(H);
             }
 
-            ℳ.multiply(1 / (double)P.Count);
+            ℳ.multiply(1f / P.Count);
 
             if (canceled) break;
 
         }
 
-        for (var k = 0; k < 31; k++) {
-            Test(Dots.encode(MAX, Ꝙ[Dots.random(0, Ꝙ.Count)].g), ℳ, verbose: false);
+        Console.WriteLine();
+        Console.Out.WriteLine(ℳ, "n4");
+
+        for (var k = 0; k < 1; k++) {
+            var X = Dots.encode(MAX, Ꝙ[Dots.random(0, Ꝙ.Count)].g);
+            var Y = Dots.compute(ℳ, X);
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write("X:");
+            Console.ResetColor();
+            Console.Out.WriteLine(X, "n4");
+            Console.WriteLine(Dots.decode(X));
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.Write("Y:");
+            Console.ResetColor();
+            Console.Out.WriteLine(Y, "n4");
+            Console.WriteLine(Dots.decode(Y));
+            Console.ResetColor();
         }
-
-        ℳ.print(Console.Out);
-
-        Console.WriteLine("\r\nPress Ctrl + Q to quit...\r\n");
+        Console.WriteLine();
 
         bool stop = false;
-
+        Console.WriteLine("\r\nPress Ctrl + Q to quit...\r\n");
         while (!stop) {
             ConsoleKeyInfo cki = System.Console.ReadKey(true);
             if (cki.Modifiers.HasFlag(ConsoleModifiers.Control)
