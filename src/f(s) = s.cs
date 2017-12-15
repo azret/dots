@@ -8,7 +8,7 @@ public static class App {
         public string g;
     }
 
-    static List<Gram> Load(out int max, out ISet<char> digest) {
+    static List<Gram> Load(out int max, out ISet<char> digest, out int hi, out int lo) {
         List<Gram> grams = new List<Gram>();
 
         char[] breaks = new char[] { '/', '\\', '\'', '"', ':', ',', ';', '.', '?', '!', ' ', '[', ']', '{', '}', '(', ')', '\r', '\n', '\t',
@@ -16,7 +16,7 @@ public static class App {
 
         digest = new HashSet<char>();
 
-        max = 7;
+        max = 7; hi = int.MinValue; lo = int.MaxValue;
 
         foreach (string g in AMICITIA.Split(breaks, StringSplitOptions.RemoveEmptyEntries)) {
             if (!string.IsNullOrWhiteSpace(g)) {
@@ -25,6 +25,12 @@ public static class App {
                     g = g,
                 });
                 foreach (char c in g) {
+                    if (c > hi) {
+                        hi = c;
+                    }
+                    if (c < lo) {
+                        lo = c;
+                    }
                     digest.Add(c);
                 } 
             }
@@ -34,15 +40,15 @@ public static class App {
     }
 
     static void Main(string[] args) {
-        int MAX; ISet<char> digest;
+        int MAX; ISet<char> digest; int hi; int lo;
 
-        var Ꝙ = Load(out MAX, out digest);
+        var Ꝙ = Load(out MAX, out digest, out hi, out lo);
 
-        MAX *= (int)2.1;
+        MAX = 7;
 
         Dot[][] ℳ = new Dot[][]
         {
-           Dots.create<Sigmoid>(MAX),
+           // Dots.create<Sigmoid>(MAX),
            Dots.create(MAX)
         };
 
@@ -76,15 +82,15 @@ public static class App {
 
                     string x = Ꝙ[n].g;
 
-                    var X = Dots.encode(MAX, x);
+                    var X = Dots.encode(MAX, x, hi, lo);
 
-                    // X = Dots.random(MAX, randomizer);
+                    X = Dots.random(MAX, randomizer);
 
                     string ŷ = string.Join("·", x.ToCharArray());
 
-                    var Ŷ = Dots.encode(MAX, ŷ);
+                    var Ŷ = Dots.encode(MAX, ŷ, hi, lo);
 
-                    // Ŷ = X;
+                    Ŷ = X;
 
                     double e;
 
@@ -92,9 +98,9 @@ public static class App {
 
                         Ŷ,
 
-                        rate: 1e-3f,
+                        () => 1e-3f,
 
-                        momentum: 9e-1f
+                        () => 9e-1f
 
                     );
 
@@ -131,24 +137,26 @@ public static class App {
         for (var k = 0; k < 7; k++) {
             string s = Ꝙ[Dots.random(0, Ꝙ.Count)].g;
 
-            var X = Dots.encode(MAX, s);
+            var X = Dots.encode(MAX, s, hi, lo);
             var Y = Dots.compute(ℳ, X);
-            var Ŷ = Dots.encode(MAX, string.Join("·", s.ToCharArray()));
+            var Ŷ = Dots.encode(MAX, string.Join("·", s.ToCharArray()), hi, lo);
 
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine($"{Dots.decode(X)}");
+            Console.WriteLine($"{Dots.decode(X, hi, lo)}");
             Console.ResetColor();
-            Console.Out.WriteLine(X, "n2");
+            Console.Out.WriteLine(X, "n6");
 
+            /*
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine($"{Dots.decode(Ŷ)}");
             Console.ResetColor();
             Console.Out.WriteLine(Ŷ, "n2");
+            */
 
             Console.ForegroundColor = ConsoleColor.Magenta;
-            Console.WriteLine($"{Dots.decode(Y)}");
+            Console.WriteLine($"{Dots.decode(Y, hi, lo)}");
             Console.ResetColor();
-            Console.Out.WriteLine(Y, "n2");
+            Console.Out.WriteLine(Y, "n6");
 
         }
         Console.WriteLine();

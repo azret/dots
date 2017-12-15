@@ -4,7 +4,7 @@
     /// A Dot(·) is a high level linear unit that produces a single scalar value ƒ
     /// </summary>
     public partial class Dot {
-        public float ƒ, δƒ, δ;
+        public float ƒ, δƒ, Δ;
 
         public static implicit operator Dot(float value) {
             return new Dot() { ƒ = value };
@@ -98,7 +98,7 @@
         public IΩ Ω;
 
         [Runtime.CompilerServices.MethodImpl(Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        public unsafe void compute(Dot[] χ) {
+        public unsafe float compute(Dot[] χ) {
             const float BIAS = 1;
 
             System.Diagnostics.Debug.Assert(χ.Length == β.Length);
@@ -114,16 +114,18 @@
                 }
             }
 
-            if (Ω == null) {
-                ƒ = y; δƒ = 1;
-            } else {
+            ƒ = y; δƒ = 1; Δ = 0;
+
+            if (Ω != null) {
                 ƒ = Ω.ƒ(y); δƒ = Ω.δƒ(ƒ);
             }
+
+            return ƒ;
         }
 
         [Runtime.CompilerServices.MethodImpl(Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
         public unsafe void move(float α /* learning rate */, float μ /* momentum */) {
-            float δ; float Δ = α * /* gradient */ this.δ;
+            float δ; float Δ = α * /* gradient */ this.Δ;
             δ = Δ * this.ζ.χ; this.ζ.β += (1 - 0) * δ + μ * ζ.δ; ζ.δ = δ;
             fixed (Coefficient* p = this.β) {
                 Coefficient* c = p;
@@ -205,21 +207,23 @@
             return dst;
         }
 
-        public static Dot[] encode(int len, string src) {
+        public static Dot[] encode(int len, string src, int hi, int lo) {
+            float norm = (hi - lo);
             Dot[] dst = new Dot[len];
             for (var i = 0; i < dst.Length; i++) {
                 dst[i] = 0f;
                 if (i < src.Length) {
-                    dst[i].ƒ = src[i] / 113f;
+                    dst[i].ƒ = (src[i] - lo) / norm;
                 }
             }
             return dst;
         }
 
-        public static string decode(this Dot[] src) {
+        public static string decode(this Dot[] src, int hi, int lo) {
+            float norm = (hi - lo);
             char[] dst = new char[src.Length];
             for (var i = 0; i < src.Length; i++) {
-                dst[i] = (char)(src[i].ƒ * 113f);
+                dst[i] = (char)(src[i].ƒ * norm + lo);
             }
             return new string(dst);
         }
@@ -237,7 +241,7 @@
                 Ω = src.Ω,
                 ƒ = src.ƒ, δƒ = src.δƒ,
                 β = copy(src.β), ζ = src.ζ,
-                δ = src.δ,
+                Δ = src.Δ,
             };
         }
 
@@ -389,8 +393,24 @@
             return float.NaN;
         }
 
-        public static float sgd(this Dot[][] ℳ, Dot[] X, Dot[] Ŷ, float rate, float momentum) {
-            Dot[] Y;
+        public static float sgd(this Dot[] ℳ, Dot[] X, Dot[] Ŷ, Func<float> rate, Func<float> momentum) {
+            float cost = 0f;
+            float α = rate(); float μ = momentum();
+            System.Diagnostics.Debug.Assert(ℳ != null && ℳ.Length == Ŷ.Length);
+            for (int i = 0; i < ℳ.Length; i++) {
+                Dot y = ℳ[i]; Dot ŷ = Ŷ[i];
+                float δ = -(y.compute(X) - ŷ.ƒ);
+                System.Diagnostics.Debug.Assert(y.Δ == 0);
+                y.Δ += δ * y.δƒ;
+                cost += δ * δ;
+                y.move(α : α, μ : μ);
+            }
+            return cost / 2;
+        }
+
+        public static float sgd(this Dot[][] ℳ, Dot[] X, Dot[] Ŷ, Func<float> rate, Func<float> momentum) {
+            float cost = 0f; float α = rate(); float μ = momentum();
+            Dot[] Y = null;
             for (int h = 0; h < ℳ.Length; h++) {
                 Y = ℳ[h];
                 for (int i = 0; i < Y.Length; i++) {
@@ -398,37 +418,42 @@
                 }
                 X = Y;
             }
-            var cost = 0.0f; Y = null;
+            System.Diagnostics.Debug.Assert(Y != null && Y.Length == Ŷ.Length);
+            for (int i = 0; i < Y.Length; i++) {
+                Dot y = Y[i]; Dot ŷ = Ŷ[i];
+                float δ = -(y.ƒ - ŷ.ƒ);
+                System.Diagnostics.Debug.Assert(y.Δ == 0);
+                y.Δ += δ;
+                cost += δ * δ;
+            }
+            Y = null;
             for (int h = ℳ.Length - 1; h >= 0; h--) {
-                float δ; Dot y; Dot ŷ; Dot x;
                 if (Y == null) {
                     Y = ℳ[h]; 
                     System.Diagnostics.Debug.Assert(Y.Length == Ŷ.Length);
                     for (int i = 0; i < Y.Length; i++) {
-                        y = Y[i]; ŷ = Ŷ[i];
-                        δ = - (y.ƒ - ŷ.ƒ);
-                        y.δ = δ * y.δƒ;
-                        cost += Math.sqr(δ);
+                        Dot  y = Y[i];
+                        y.Δ *= y.δƒ;
                     }
                 } else {
                     X = ℳ[h];
                     for (int j = 0; j < X.Length; j++) {
-                        δ = 0.0f;
+                        float δ = 0.0f;
                         for (int i = 0; i < Y.Length; i++) {
-                            y = Y[i];
-                            δ += y.δ * y.β[j].β;
+                            Dot y = Y[i];
+                            δ += y.Δ * y.β[j].β;
                         }
-                        x = X[j];
-                        x.δ = δ * x.δƒ;
-                    }
-                    for (int i = 0; i < Y.Length; i++) {
-                        Y[i].move(rate, momentum);
+                        Dot x = X[j];
+                        x.Δ = δ * x.δƒ;
                     }
                     Y = X;
                 }
             }
-            for (int i = 0; i < Y.Length; i++) {
-                Y[i].move(rate, momentum);
+            for (int h = 0; h < ℳ.Length; h++) {
+                Y = ℳ[h];
+                for (int i = 0; i < Y.Length; i++) {
+                    Y[i].move(α: α, μ: μ);
+                }
             }
             return cost / 2;
         }
@@ -611,12 +636,12 @@
             Write(console, src, format, separator);
             console.WriteLine();
         }
-        
+
         public static void Write(this IO.TextWriter console, Dot[][] src, string format = "n4") {
             for (int h = 0; h < src.Length; h++) {
                 Dot[] ℓ = src[h];
                 for (int i = 0; i < ℓ.Length; i++) {
-                    console.Write($"ƒ({i}) = [");
+                    console.Write($"ƒ{h}({i}) = [");
                     if (console == System.Console.Out) {
                         if (ℓ[i].ζ.β > 0) {
                             if (ℓ[i].ζ.β >= 0.0001) {
@@ -660,6 +685,7 @@
                     }
                     console.Write("]\r\n");
                 }
+                console.Write("\r\n");
             }
         }
 
